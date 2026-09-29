@@ -1,479 +1,742 @@
-# Linux & Git Fundamentals — Lecture 02
+# Git Fundamentals — Lecture 03
 
 ## Overview
 
-This lecture covers Linux fundamentals for Data Engineering work: system architecture, distributions, core commands, environments (Development → Testing → Staging → Production), file permissions, ownership, users/groups/sudo, process management, `curl` vs `wget`, and shell scripting as it connects to HDFS and Spark.
+This is a long-term personal reference for Git — how it works, how it's used day to day, and how to talk about it in an interview. It covers version control basics, the core workflow (`status` → `add` → `commit` → `push`), branching and merging, conflicts, forks, remotes, and how all of this connects to real Data Engineering work.
 
-> 💡 **Note:** The lecture material discussed here covers Linux fundamentals only — no Git topics were included in the source content, so none are added here to avoid presenting untaught material as covered.
+> 🧠 **Mental Model (short version):** Git tracks changes locally and preserves project history. I edit files in the working tree, use `git add` to stage what I want, `git commit` to record a local version, and `git push` to publish commits to a remote. Branches isolate parallel work; merge integrates branches; conflicts require manual resolution.
 
 ---
 
-## 1. 🐧 Linux System Architecture
+# Git Fundamentals
 
-**Simplified flow:**
+## 1. 📌 What is Git?
+
+**Simple explanation:**
+Git is a tool that remembers every version of your project, so you can see what changed, undo mistakes, and work on the same code as other people without overwriting each other's work.
+
+**Technical explanation:**
+Git is a **distributed version control system (VCS)** used to track changes in files, maintain project history, work safely in parallel, and synchronize repositories between machines. "Distributed" means every clone of a repository holds the full project history, not just a working copy — so most operations (history, branching, committing) happen locally, and syncing with others is a separate, explicit step (`push`/`pull`).
+
+**Key ideas it covers:**
+
+| Concept | What it means |
+|---|---|
+| Version control | Recording snapshots of a project over time |
+| Tracking changes | Knowing exactly what was added, modified, or removed |
+| History | A full, searchable record of every recorded change |
+| Collaboration | Multiple people working on the same project without overwriting each other |
+| Local repository | The full project + history stored on your own machine |
+| Remote repository | A copy of the repository hosted elsewhere (e.g., on GitHub) for sharing/syncing |
+
+### 🎯 Interview Angle
+Git questions almost always start with "what is Git," and the strongest answers mention **distributed** version control specifically — not just "it tracks changes" — because that's what separates Git from older, centralized VCS tools.
+
+---
+
+## 2. Git vs GitHub vs GitLab vs Bitbucket
+
+**Key idea:** Git is the *tool*. GitHub, GitLab, and Bitbucket are *platforms* that host and add collaboration features around Git repositories.
+
+> ⚠️ **Important:** GitHub and GitLab should not be described simply as "Git servers." GitHub is a hosted platform for Git repositories with collaboration features (pull requests, issues, CI/CD, etc.). GitLab is a hosted DevOps/Git platform with Git hosting plus a broader set of CI/CD and DevOps tooling. Both go well beyond just "serving" Git repositories.
+
+| Tool | What It Is | Role |
+|---|---|---|
+| **Git** | Version control software | Tracks history locally and manages branches/commits |
+| **GitHub** | Hosted Git platform | Remote repositories, collaboration, pull requests, CI/CD, issues |
+| **GitLab** | Hosted DevOps/Git platform | Remote repositories, merge requests, CI/CD, issues, and DevOps features |
+| **Bitbucket** | Hosted Git platform | Remote repositories and team collaboration |
+
+### 🎯 Interview Angle
+**Q: What is the difference between Git and GitHub?**
+Git is the version-control software. GitHub is a hosting and collaboration platform built around Git repositories.
+
+---
+
+## 3. Repository
+
+**Simple explanation:**
+A repository is your project folder, plus Git's memory of every version it's ever been in.
+
+**Technical explanation:**
+A Git repository is a project directory managed by Git. It contains the project files plus Git's metadata and history, letting you track versions, branches, commits, and collaboration state.
+
+> 🧠 **Mental Model:** Repository = Project + Git Metadata + Version History
+
+| Type | Description |
+|---|---|
+| Local repository | The repository as it exists on your own machine, including full history |
+| Remote repository | A copy of the repository hosted elsewhere (e.g., GitHub), used for sharing and syncing |
+
+---
+
+## 4. 🔄 Git Architecture / Workflow
+
+A file doesn't become part of a commit just because it exists in the folder — Git moves changes through distinct states.
 
 ```mermaid
-flowchart LR
-    A[Hardware] --> B[Kernel]
-    B --> C[Shell]
-    C --> D[User-space Applications]
-    D --> E[User]
+flowchart TD
+    A[Working Directory] --> B[Staging Area]
+    B --> C[Local Repository]
+    C --> D[Remote Repository]
 ```
 
-| Layer | Description |
+| Stage | What Lives There |
 |---|---|
-| Hardware | CPU, RAM, storage, network devices |
-| Kernel | The core of Linux; manages processes, memory, filesystems, devices, and networking |
-| Shell | Command-line interface used to interact with the OS (e.g., Bash, Zsh) |
-| User space | Applications and tools such as Python, Git, Spark, and Hadoop |
+| Working Directory | The files you're actively editing |
+| Staging Area | Changes you've chosen to include in the next commit |
+| Local Repository | Recorded commits/history on your own machine |
+| Remote Repository | The shared copy of the repository (e.g., on GitHub) |
 
-### 🎯 Interview Q&A
-
-**Q: Why is Linux important for a Data Engineer?**
-**Answer:** Linux is widely used for servers and data platforms. I use it for file management, permissions, process management, troubleshooting, automation, and running technologies such as Hadoop, Spark, and Airflow.
+**Typical flow:** Edit → `git status` → `git add` → `git commit` → `git push`
 
 ---
 
-## 2. Linux Distributions & WSL
+## 5. `git status`
 
-**Linux distributions (distros)** are complete operating-system environments built around the Linux kernel, with utilities, libraries, package managers, and defaults.
+**Simple explanation:**
+`git status` tells you what Git currently sees has changed.
 
-> ⚠️ **Important:** The Linux **kernel** and a Linux **distribution** are not the same thing. The kernel is the core; a distribution packages the kernel with everything needed to make a usable OS.
+**Technical explanation:**
+`git status` reports the current state of the working tree and staging area:
 
-| Distribution Family | Examples | Typical Package Manager |
-|---|---|---|
-| Debian-based | Debian, Ubuntu | APT |
-| Red Hat-based | RHEL, Fedora, Rocky Linux | DNF |
-
-**WSL (Windows Subsystem for Linux)** lets Windows users run Linux environments such as Ubuntu without replacing Windows.
-
-### 🎯 Interview Q&A
-
-**Q: What is the difference between a Linux distribution and the Linux kernel?**
-**Answer:** The kernel is the core that manages hardware and system resources. A distribution packages the kernel with utilities, libraries, package management, and other software to provide a complete operating-system environment.
-
----
-
-## 3. Core Linux Commands
-
-| Command | Meaning | Why It Matters |
-|---|---|---|
-| `pwd` | Print Working Directory | Know where you are |
-| `ls` | List directory contents | Inspect files/directories |
-| `ls -a` | Include hidden entries | Inspect config files such as `.bashrc` |
-| `ls -l` | Long listing | See permissions, owner, group, size, time |
-| `ls -ltr` | Long listing + time sort + reverse | Useful for finding older/newer files and logs |
-| `cd` | Change directory | Navigate |
-| `cd ..` | Parent directory | Move one level up |
-| `cd ~` | Home directory | Return to user home |
-| `mkdir` | Make directory | Create folders |
-| `mkdir -p` | Create parent directories as needed | Create directory trees in one command |
-| `history` | Command history | Review previous commands |
-| `man` | Manual | Detailed command documentation |
-| `command --help` | Quick help | Fast options/usage reference |
+- Untracked files
+- Modified files
+- Deleted files
+- Staged changes
+- Current branch and tracking information
 
 ```bash
-# Example: create a nested directory tree in one command
-mkdir -p data/raw/2026
-
-# Example: list files, newest changes last
-ls -ltr
+git status
 ```
 
-> ⚠️ **Important:** `ls -t` sorts by **modification time** — it does not reliably reflect creation time.
+### 👨‍💻 Data Engineer Connection
+Run `git status` **frequently** — before staging, before committing, and after a pull. It's one of the safest commands available (read-only) and it's the fastest way to confirm exactly what you're about to stage or commit, which matters a lot when a pipeline script has several unrelated edits mixed together.
 
 ---
 
-## 4. Development → Testing → Staging → Production
+## 6. `git add`
 
-```mermaid
-flowchart LR
-    A[Development] --> B[Testing]
-    B --> C[Staging]
-    C --> D[Production]
+**Simple explanation:**
+`git add` picks which changes you want included in your next commit.
+
+**Technical explanation:**
+`git add` moves selected changes from the working tree into the **staging area**.
+
+```bash
+git add file.py     # stage a specific file's current changes
+git add .            # stage changes under the current path (subject to ignore rules)
 ```
 
-| Environment | Purpose | Data Engineering Example |
-|---|---|---|
-| Development | Build and change features | Develop a new ETL transformation |
-| Testing | Verify behavior and detect bugs | Run automated tests against pipeline logic |
-| Staging | Final validation in a production-like environment | Validate an Airflow/Spark deployment before release |
-| Production | Real system used by users/business processes | Run live ETL/ELT pipelines on real data |
+> ⚠️ **Important:** `git add` does **not** upload anything. It only moves changes locally, from the working directory into the staging area. Nothing leaves your machine at this step.
 
-> 💡 **Note:** Mental model — Development = build → Testing = verify → Staging = rehearse → Production = serve.
+| Command | Scope |
+|---|---|
+| `git add file.py` | Stages only the changes in that specific file |
+| `git add .` | Stages changes across the current path (respecting `.gitignore`) |
 
 ---
 
-## 5. 🔐 Linux Permissions: `rwx`
+## 7. `git commit`
 
-Permissions are evaluated for three classes: **Owner (user)**, **Group**, and **Others**.
+**Simple explanation:**
+`git commit` saves a snapshot of your staged changes into the project's local history.
 
-```mermaid
-flowchart TB
-    F[File / Directory] --> U[👤 Owner]
-    F --> G[👥 Group]
-    F --> O[🌐 Others]
-    U --> P1[rwx]
-    G --> P2[rwx]
-    O --> P3[rwx]
+**Technical explanation:**
+`git commit -m "message"` creates a recorded version/snapshot in the **local** Git history from the currently staged changes.
+
+```bash
+git commit -m "Add schema validation to ingestion job"
 ```
 
-| Permission | Numeric Value | File Meaning | Directory Meaning |
+> ⚠️ **Important:** `git commit` does **not** upload code to GitHub. It only records the snapshot locally.
+
+### add → commit → push, clearly separated
+
+| Step | Command | Where It Happens | Purpose |
 |---|---|---|---|
-| `r` | 4 | Read contents | List directory entries |
-| `w` | 2 | Modify contents | Create/delete/rename entries when combined with appropriate access |
-| `x` | 1 | Execute program/script | Traverse/access entries inside directory |
-
-> ⚠️ **Important:** Execute permission (`x`) means something different for files versus directories — for a file it allows execution, for a directory it allows traversal/access into it.
+| 1 | `git add` | Staging Area | Choose changes for the next commit |
+| 2 | `git commit` | Local Repository | Record a new version in local history |
+| 3 | `git push` | Remote Repository | Publish local commits to the remote |
 
 ---
 
-## 6. `chmod` — Numeric Permissions
+## 8. `git push`
 
-**`chmod`** changes permissions. Numeric mode uses `4 = read`, `2 = write`, `1 = execute`.
+**Simple explanation:**
+`git push` sends your recorded commits from your machine to the shared remote repository.
 
-| Number | Combination | Symbolic Form |
-|---|---|---|
-| 7 | 4+2+1 | `rwx` |
-| 6 | 4+2 | `rw-` |
-| 5 | 4+1 | `r-x` |
-| 4 | 4 | `r--` |
-| 3 | 2+1 | `-wx` |
-| 2 | 2 | `-w-` |
-| 1 | 1 | `--x` |
-| 0 | 0 | `---` |
+**Technical explanation:**
+`git push` sends local commits to a configured remote branch.
 
 ```bash
-# Example
-chmod 754 test.py
+git push origin main
 ```
 
-This means:
-
-| Class | Permission |
+| Term | Meaning |
 |---|---|
-| Owner | `rwx` |
-| Group | `r-x` |
-| Others | `r--` |
+| Local repository | Your machine's copy, with full history |
+| Remote repository | The shared, hosted copy (e.g., on GitHub) |
+| Remote branch | A branch that exists on the remote repository |
 
-> 💡 **Note:** For a Python script, execute permission alone does not define how it runs — an executable script commonly needs a valid shebang (e.g., `#!/usr/bin/env python3`) and an appropriate environment.
-
-### 🎯 Interview Q&A
-
-**Q: Explain `chmod 754`.**
-**Answer:** The owner has `rwx`, the group has `r-x`, and others have `r--`. The values come from read=4, write=2, and execute=1.
+**`origin`** here is the name of the remote you're pushing to (see [Remotes](#20-what-is-a-remote) below).
 
 ---
 
-## 7. Ownership: `chown`
+## 9. `git pull`
 
-`chmod` answers **"what can they do?"**; `chown` answers **"who owns it?"**.
+**Simple explanation:**
+`git pull` updates your local branch with changes from the remote.
+
+**Technical explanation:**
+`git pull` normally performs a **fetch** followed by an **integration step** into the current branch — commonly a merge, though configuration can determine whether the integration uses merge or rebase.
 
 ```bash
-sudo chown amin:data-engineers data.csv
+git pull
 ```
 
-This changes the owner to `amin` and the group to `data-engineers`.
-
-### 🎯 Interview Q&A
-
-**Q: What is the difference between `chmod` and `chown`?**
-**Answer:** `chmod` changes permissions; `chown` changes ownership. `chmod` answers what the owner/group/others can do, while `chown` determines who owns the file and which group is associated with it.
+> 💡 **Note:** The exact integration behavior (merge vs. rebase) depends on your Git configuration — don't assume it's always a merge.
 
 ---
 
-## 8. 👤 Users, Groups, UID/GID, and `sudo`
+## 10. `git clone`
 
-A user has a **UID**; a group has a **GID**. The ID identifies the account/group internally; permissions determine access.
+**Simple explanation:**
+`git clone` downloads a copy of an existing project, including its full history, onto your machine for the first time.
 
-> ⚠️ **Important:** There is no separate "sudo user" type. A normal user may be **authorized** to run `sudo`, which temporarily executes a command with elevated privileges according to sudo policy.
-
-### Root vs Normal User vs Sudo-Authorized User
-
-| Concept | What It Is | Data Engineer Example |
-|---|---|---|
-| Normal user | Limited account | Run Python, Git, inspect own files |
-| Sudo-authorized user | Normal user allowed controlled privilege elevation | Install a package or restart an allowed service |
-| `root` | Superuser with very broad system privileges | System administration, protected configuration |
-
-### Users vs Groups vs Others
-
-| Concept | Description |
-|---|---|
-| User (Owner) | The individual account that owns a file/process |
-| Group | A collection of users sharing access, identified by a GID |
-| Others | Everyone who is neither the owner nor a member of the owning group |
-
-**Group example:** the `data-engineers` group shares access to a project directory.
-
-> 💡 **Note:** Least privilege is an important security principle — give each user/service only the access required to perform its job.
-
-### 🎯 Interview Q&A
-
-**Q: What is `sudo`?**
-**Answer:** `sudo` lets an authorized normal user execute a specific command with elevated privileges according to the system's sudo policy. It is not a separate type of user.
-
-**Q: What is the difference between root and a sudo-enabled user?**
-**Answer:** Root is the superuser. A sudo-enabled user is still a normal user but can elevate privileges for authorized commands. Least privilege is preferred over unrestricted root access.
-
-**Q: Why use groups in Linux?**
-**Answer:** Groups let administrators manage shared access for multiple users efficiently. For example, a `data-engineers` group can receive access to a shared project directory instead of configuring every user separately.
-
----
-
-## 9. `usermod`
-
-`usermod` modifies user-account properties.
+**Technical explanation:**
+`git clone <URL>` creates a new local repository copy of a remote repository, including its Git history.
 
 ```bash
-sudo usermod -aG data-engineers amin
+git clone <URL>
 ```
 
-> ⚠️ **Important:** `-aG` = append the user to supplementary groups. Without `-a`, using `-G` can **replace** the existing supplementary group list.
+> ⚠️ **Important:** `clone` is not "starting a new project from scratch" — it's making a local copy of an **existing** repository.
 
-| Option | Meaning |
-|---|---|
-| `-d` | Set home directory |
-| `-m` | Move home directory contents |
-| `-s` | Set login shell |
-| `-l` | Set login name |
-| `-L` | Lock account |
-| `-U` | Unlock account |
+### Clone vs Pull
 
-### 🎯 Interview Q&A
-
-**Q: How would you add a user to a group without removing their existing groups?**
-**Answer:** Use `usermod -aG <group> <user>` — the `-a` (append) flag is essential, since `-G` alone can overwrite the existing supplementary group list.
-
----
-
-## 10. ⚙️ Processes & PIDs
-
-A **process** is a running instance of a program. Linux identifies processes using **PIDs (Process IDs)**.
-
-| Command | Use |
-|---|---|
-| `ps` | Inspect processes associated with the current session |
-| `ps aux` | Broad view of processes |
-| `pgrep python` | Find PIDs matching `python` |
-| `kill PID` | Send `SIGTERM` by default; request graceful termination |
-| `kill -9 PID` | Send `SIGKILL`; force termination |
-| `Ctrl+C` | Usually sends `SIGINT` to the foreground process |
-
-> ⚠️ **Important:** Prefer graceful termination (`kill PID`) before `SIGKILL` when possible, because applications may need to clean up resources or flush state.
-
-### 🎯 Interview Q&A
-
-**Q: How would you find a process PID?**
-**Answer:** I can use `ps`/`ps aux` to inspect processes, or `pgrep` with a process name — for example, `pgrep python`.
-
-**Q: What does `kill` do?**
-**Answer:** `kill` sends a signal to a process. By default it sends `SIGTERM`, requesting graceful termination. `kill -9` sends `SIGKILL` and forces termination.
-
----
-
-## 11. 🌐 `curl` vs `wget`
-
-| Tool | Typical Use | Data Engineering Example |
+| Aspect | `git clone` | `git pull` |
 |---|---|---|
-| `curl` | HTTP/API requests and data transfer | Call a REST API and inspect JSON |
-| `wget` | File downloading | Download a CSV/Parquet/archive from a URL |
-
-> 💡 **Note:** There is overlap — `curl` can download files too. The distinction above is about typical usage, not a strict rule.
-
-### 🎯 Interview Q&A
-
-**Q: `curl` vs `wget`?**
-**Answer:** `curl` is commonly used for HTTP/API interaction and data transfer; `wget` is commonly used for downloading files. There is overlap between the two.
+| When you use it | You don't yet have the repository locally | You already have a local clone |
+| What it does | Creates a new local copy + downloads full history | Fetches remote updates and integrates them into the current branch |
+| Frequency | Once, at the start | Repeatedly, to stay up to date |
 
 ---
 
-## 12. 📜 Shell Scripting
+## 11. `git fetch`
 
-A **shell script** is a file containing a sequence of shell commands that can be executed automatically.
+**Simple explanation:**
+`git fetch` checks what's new on the remote without changing your current branch.
 
-**Data Engineering uses:** file management, downloading data, environment preparation, HDFS commands, launching Python/Spark jobs, checks, and operational automation.
+**Technical explanation:**
+`git fetch` downloads remote updates but does **not** integrate them into your current branch.
 
-> ⚠️ **Important:** Shell scripts are excellent for operational automation, but larger workflows may need orchestration tools such as **Airflow**. Shell scripting is not a replacement for orchestration tools in complex production workflows.
+```bash
+git fetch
+```
 
-### 🎯 Interview Q&A
+> 🧠 **Mental Model:** `fetch` = "show me what changed remotely." `pull` = "fetch + bring those changes into my current branch."
 
-**Q: What is a shell script and how would you use it as a Data Engineer?**
-**Answer:** It is a file containing shell commands for automation. I can use it to prepare directories, download data, interact with HDFS, inspect files/logs, and trigger Python or Spark jobs.
+### Fetch vs Pull
+
+| Aspect | `git fetch` | `git pull` |
+|---|---|---|
+| Downloads remote data | ✅ | ✅ |
+| Integrates into current branch | ❌ | ✅ (fetch + integration) |
+| Risk of changing your working files | None | Possible (merge/rebase happens) |
+
+> 💡 **Note:** The exact integration step `git pull` performs depends on configuration — commonly merge, sometimes rebase.
 
 ---
 
-## 13. 🗄️ Shell + HDFS: Practical Connection
+# Branches
 
-Shell scripting can automate HDFS operations.
+## 12. 🔀 What is a Branch?
 
-**Conceptual flow:** create HDFS directory → upload data → verify → trigger processing.
+**Simple explanation:**
+A branch is a separate line of work, so you can make changes without touching the main, stable version of the code until you're ready.
+
+**Technical explanation:**
+A branch is a movable reference to a line of development. Branches let multiple lines of work evolve without immediately mixing their changes.
 
 ```mermaid
 flowchart LR
-    A[Create HDFS Directory] --> B[Upload Data]
-    B --> C[Verify]
-    C --> D[⚡ Trigger Spark Processing]
+    main((main))
+    main --> f1[feature/etl]
+    main --> f2[feature/spark]
+    main --> f3[bugfix/parser]
 ```
+
+After review/testing, a branch can be merged back into an integration branch such as `main` or `develop`, depending on the team's workflow.
+
+### 🎯 Interview Angle
+**Q: Why use branches?**
+They isolate features and fixes, reduce accidental interference between engineers' work, and support parallel development with review before anything reaches the stable branch.
+
+---
+
+## 13. Why Branches Matter for Data Engineers
+
+Realistic branch names you'd actually see in a Data Engineering repo:
+
+- `feature/airflow-dag`
+- `feature/spark-etl`
+- `feature/api-ingestion`
+- `bugfix/schema-validation`
+
+### 👨‍💻 Data Engineer Connection
+Branches keep experimental or in-progress pipeline changes away from the production code path. A broken Spark job or a half-finished DAG lives on its own branch until it's reviewed and tested — it never directly touches the stable branch that production actually runs from.
+
+---
+
+## 14. Branch Commands
+
+| Command | Purpose |
+|---|---|
+| `git branch` | List local branches |
+| `git branch feature-x` | Create a branch |
+| `git switch feature-x` | Switch to an existing branch |
+| `git switch -c feature-x` | Create and switch to a new branch |
+| `git merge feature-x` | Merge the specified branch into the current branch |
 
 ```bash
-hdfs dfs -mkdir -p /data/raw
-hdfs dfs -put data.csv /data/raw/
-hdfs dfs -ls /data/raw/
-spark-submit etl_job.py
+git branch feature/spark-etl
+git switch feature/spark-etl
+# ...work happens here...
+git switch main
+git merge feature/spark-etl
 ```
 
-> ⚠️ **Important:** Shell = automation mechanism; HDFS = distributed storage system. They serve different roles in a pipeline.
+---
 
-### Linux → Shell → Hadoop/Spark/Data Engineering Relationship
+# Merge
+
+## 15. What is `git merge`?
+
+**Simple explanation:**
+`git merge` brings the changes from one branch into the branch you're currently on.
+
+**Technical explanation:**
+`git merge feature-x` combines the history/changes of another branch into the currently checked-out branch.
+
+```bash
+git switch main
+git merge feature-x
+```
+
+**A realistic (not universal) flow:**
 
 ```mermaid
 flowchart LR
-    L[🐧 Linux] --> S[📜 Shell]
-    S --> H[🗄️ Hadoop / HDFS]
-    S --> SP[⚡ Spark]
-    H --> DE[Data Engineering Pipelines]
-    SP --> DE
+    A[feature/data-pipeline] --> B[development]
+    B --> C[testing]
+    C -->|merge| D[main]
+```
+
+> 💡 **Note:** This is one example flow, not a rule. Different teams use different branching strategies (e.g., trunk-based, Git Flow) — the important part is that changes go through review/testing before reaching the stable branch.
+
+---
+
+# Merge Conflicts
+
+## 16. 🚨 What is a Merge Conflict?
+
+**Simple explanation:**
+A merge conflict happens when two people changed the exact same part of a file in different ways, and Git doesn't know which version to keep.
+
+**Technical explanation:**
+A merge conflict occurs when Git cannot automatically reconcile competing changes — commonly because different branches modified overlapping parts of the same file. Git pauses the merge and asks you to decide.
+
+**Example:** Developer A changes the same lines that Developer B changed. Git cannot confidently decide which version should remain, so it marks the conflict in the file.
+
+```text
+<<<<<<< HEAD
+your current branch's version of the code
+=======
+the incoming branch's version of the code
+>>>>>>> feature-x
+```
+
+> ⚠️ **Important:** Conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) are instructions from Git showing where the competing changes are — they are **not** valid application code and must be removed before the file is usable.
+
+---
+
+## 17. How to Resolve a Merge Conflict
+
+1. Run the merge or pull.
+2. Git identifies and lists the conflicted files.
+3. Open a conflicted file.
+4. Inspect both versions (between the conflict markers).
+5. Decide what the final code should be — one side, the other, or a combination.
+6. Remove the conflict markers.
+7. Save the file.
+8. Run tests.
+9. `git add` the resolved file.
+10. Complete the merge/commit as required.
+
+> ⚠️ **Important:** Testing after conflict resolution matters because removing conflict markers by hand is easy to get slightly wrong — a resolved file can still be syntactically fine but logically broken (e.g., silently dropping one side's fix). Tests catch what a visual read might miss.
+
+---
+
+# Fork
+
+## 18. ☁️ What is a Fork?
+
+**Simple explanation:**
+A fork is your own copy of someone else's repository, hosted under your account, so you can make changes without needing permission on the original project.
+
+**Technical explanation:**
+A fork is a server-side (hosted) copy of another repository under your own account/namespace on a hosting platform. It's common when contributing to a project where you don't have direct write access.
+
+> 💡 **Note:** You generally don't need write permission to fork a publicly forkable repository. Private repositories and organization policies can restrict forking.
+
+**Typical open-source contribution flow:**
+
+```mermaid
+flowchart LR
+    U[Upstream Repository] --> F[Fork]
+    F --> C[Clone]
+    C --> B[Feature Branch]
+    B --> CM[Commit]
+    CM --> P[Push]
+    P --> PR[Pull Request]
 ```
 
 ---
 
-## 14. Important Linux Concepts to Add Next
+## 19. Fork vs Clone
 
-> 💡 **Note:** These topics were flagged in the lecture as areas to study next — they are listed here as a to-do, not as content covered in this lecture.
+> ⚠️ **Important:** Fork and clone are **not** the same thing.
 
-- File operations: `cp`, `mv`, `rm`, `touch`
-- Text processing: `grep`, `awk`, `sed`, `cut`, `sort`, `uniq`, `wc`
-- Inspection: `cat`, `less`, `head`, `tail`, `tail -f`
-- Searching: `find`
-- Pipes: `|`
-- Redirection: `>` and `>>`
-- Exit codes: `echo $?`
-- Environment variables
-- SSH / SCP / SFTP
-- Services and logs
-- `cron` / scheduling
-- Basic networking: ports, `ss`, DNS
-
----
-
-## 15. Interview Mindset
-
-Do not only memorize command syntax. For every command, know:
-
-- What problem does it solve?
-- What changes does it make?
-- What permissions does it require?
-- What could go wrong?
-- How would I use it in a real data pipeline?
-
-A strong Data Engineer answer connects Linux fundamentals to real workloads: logs → troubleshooting; permissions → secure data access; shell → automation; HDFS → distributed storage; Spark → processing; Airflow → orchestration.
-
----
-
-## Key Takeaways
-
-- Linux architecture flows Hardware → Kernel → Shell → User-space Applications → User.
-- A **distribution** ≠ the **kernel**; a distro packages the kernel with a full OS environment.
-- Permissions apply to three classes — Owner, Group, Others — using `r=4`, `w=2`, `x=1`.
-- `chmod` changes permissions; `chown` changes ownership.
-- There is no distinct "sudo user" — sudo is an authorization, not an account type. `root` is the superuser.
-- Groups let admins manage shared access efficiently (e.g., `data-engineers`).
-- `kill PID` requests graceful termination (`SIGTERM`); `kill -9 PID` forces termination (`SIGKILL`).
-- `curl` is typically for HTTP/API work; `wget` is typically for downloading files — with overlap.
-- Shell scripts automate operational tasks, including HDFS commands and triggering Spark jobs, but are not a substitute for orchestration tools like Airflow in complex production workflows.
-- Least privilege is a core security principle to apply to users and services.
-
----
-
-## Quick Command Reference
-
-| Category | Command | Purpose |
+| | Fork | Clone |
 |---|---|---|
-| Navigation | `pwd` | Show current directory |
-| Navigation | `ls -l` / `ls -a` / `ls -ltr` | List contents with detail/hidden/time-sorted |
-| Navigation | `cd`, `cd ..`, `cd ~` | Change directory / go up / go home |
-| Directories | `mkdir -p` | Create nested directories |
-| Help | `man`, `command --help` | Documentation and quick usage |
-| Permissions | `chmod 754 file` | Set owner/group/others permissions |
-| Ownership | `chown user:group file` | Change owner and group |
-| Users/Groups | `usermod -aG group user` | Add user to a group (append) |
-| Processes | `ps aux`, `pgrep name` | Inspect / find processes |
-| Processes | `kill PID`, `kill -9 PID` | Graceful / forced termination |
-| Networking | `curl <url>` | HTTP/API request |
-| Networking | `wget <url>` | Download a file |
-| HDFS | `hdfs dfs -mkdir -p /path` | Create HDFS directory |
-| HDFS | `hdfs dfs -put file /path/` | Upload data to HDFS |
-| HDFS | `hdfs dfs -ls /path/` | List HDFS directory |
-| Spark | `spark-submit job.py` | Trigger a Spark job |
+| Location | Remote/server-side copy | Local copy on your machine |
+| Ownership | Usually under your own account/namespace | Not a separate account/namespace — just a local copy |
+| Typical use | When you don't have write access to the original repository | To work locally on a repository you already have access to |
+
+### Repository, Fork, Clone — Comparison
+
+| Term | Location | Purpose | Example |
+|---|---|---|---|
+| Repository | Local or remote | Project + Git history | `data-engineering-journey` repo |
+| Clone | Local copy | Bring an existing remote repo to your machine | `git clone <url>` |
+| Fork | Remote copy under another account/namespace | Independent contribution/workspace on a hosted platform | Fork an open-source project on GitHub |
 
 ---
 
-## Interview Questions & Strong Answers
+# Remotes
 
-**Q: Why is Linux important for a Data Engineer?**
-Linux is widely used for servers and data platforms. I use it for file management, permissions, processes, troubleshooting, automation, and running technologies such as Hadoop, Spark, and Airflow.
+## 20. What is a Remote?
 
-**Q: What is the difference between a Linux distribution and the Linux kernel?**
-The kernel is the core that manages hardware and system resources. A distribution packages the kernel with utilities, libraries, package management, and other software to provide a complete operating-system environment.
+**Simple explanation:**
+A remote is a saved link to another copy of your repository, usually one hosted online.
 
-**Q: What is the difference between `chmod` and `chown`?**
-`chmod` changes permissions; `chown` changes ownership. `chmod` answers what the owner/group/others can do, while `chown` determines who owns the file and which group is associated with it.
+**Technical explanation:**
+A remote is a named reference to another repository, usually a hosted one.
 
-**Q: Explain `chmod 754`.**
-The owner has `rwx`, the group has `r-x`, and others have `r--`. The values come from read=4, write=2, and execute=1.
+```bash
+git remote -v
+git remote add origin <URL>
+git push -u origin main
+```
 
-**Q: What is `sudo`?**
-`sudo` lets an authorized normal user execute a specific command with elevated privileges according to the system's sudo policy. It is not a separate type of user.
-
-**Q: What is the difference between root and a sudo-enabled user?**
-Root is the superuser. A sudo-enabled user is still a normal user but can elevate privileges for authorized commands. Least privilege is preferred over unrestricted root access.
-
-**Q: How would you find a process PID?**
-I can use `ps`/`ps aux` to inspect processes or `pgrep` with a process name, for example `pgrep python`.
-
-**Q: What does `kill` do?**
-`kill` sends a signal to a process. By default it sends `SIGTERM`, requesting graceful termination. `kill -9` sends `SIGKILL` and forces termination.
-
-**Q: `curl` vs `wget`?**
-`curl` is commonly used for HTTP/API interaction and data transfer; `wget` is commonly used for downloading files. There is overlap.
-
-**Q: What is a shell script and how would you use it as a Data Engineer?**
-It is a file containing shell commands for automation. I can use it to prepare directories, download data, interact with HDFS, inspect files/logs, and trigger Python or Spark jobs.
-
-**Q: Why use groups in Linux?**
-Groups let administrators manage shared access for multiple users efficiently. For example, a `data-engineers` group can receive access to a shared project directory instead of configuring every user separately.
+> ⚠️ **Important:** `origin` is just a conventional name for a remote — it is **not** the GitHub server itself. You could name a remote anything; `origin` is simply the widely used default.
 
 ---
 
-## Data Engineer Practical Connections
+# Git Platforms
 
-| Linux Concept | Real Workload Connection |
+| Platform | Role |
 |---|---|
-| Logs | Troubleshooting pipeline failures |
-| Permissions | Securing data access to sensitive files/directories |
-| Shell scripting | Automating repetitive operational tasks |
-| HDFS | Distributed storage for large datasets |
-| Spark | Distributed data processing |
-| Airflow | Orchestrating multi-step production workflows |
+| **GitHub** | Hosting and collaboration around Git repositories (PRs, issues, CI/CD) |
+| **GitLab** | Git hosting plus broader DevOps/CI/CD capabilities |
+| **Bitbucket** | Git hosting and team collaboration, commonly used with Atlassian tooling |
+| **Self-hosted Git** | Organizations host and manage their own Git infrastructure |
 
 ---
 
-## Personal Revision Checklist
+# Git + Data Engineering
 
-- [ ] Explain Linux architecture in my own words
-- [ ] Explain distro vs kernel
-- [ ] Use `pwd`, `ls`, `cd`, `mkdir` confidently
-- [ ] Read `ls -l` permission output
-- [ ] Convert `rwx` to numeric `chmod` values
-- [ ] Explain owner/group/others
-- [ ] Explain UID/GID
-- [ ] Explain root vs sudo-authorized user
-- [ ] Use `chmod` and `chown` safely
-- [ ] Add a user to a group with `usermod -aG`
-- [ ] Find and stop a process using PID
-- [ ] Explain `SIGTERM` vs `SIGKILL`
-- [ ] Explain `curl` vs `wget`
-- [ ] Explain shell scripting
-- [ ] Connect shell scripts to HDFS/Spark workflows
-- [ ] Answer the interview questions above without memorizing a script
+## 21. 📊 Why Git Matters to a Data Engineer
+
+Practical, everyday uses:
+
+- Version-controlling 🐍 Python ETL/ELT scripts
+- Version-controlling SQL transformations
+- Maintaining Airflow DAGs
+- Tracking ⚡ Spark jobs and their configuration
+- Data quality check scripts
+- Dockerfiles
+- Documentation
+- CI/CD pipeline definitions
+- Code review through Pull Requests/Merge Requests
+- Rolling back to a known-good commit when a deployment breaks something
+
+> ⚠️ **Important:** Git is primarily for versioning **source code, configuration, and documentation** — it is **not** a replacement for a 🗄️ Data Lake, Data Warehouse, Object Storage, or HDFS. Do not store large production datasets directly in Git.
+
+### 🎯 Interview Angle
+**Q: Should we store production datasets in Git?**
+No — Git is built for versioning source code, configuration, and documentation, not large binary or tabular datasets. Production data belongs in a Data Lake, Data Warehouse, or object storage; Git tracks the code and configuration that *produces* and *processes* that data.
+
+---
+
+# Real Team Workflow
+
+## 22. Practical Team Workflow
+
+```mermaid
+flowchart TD
+    A[Clone] --> B[Create Feature Branch]
+    B --> C[Develop]
+    C --> D[git status]
+    D --> E[Review Changes]
+    E --> F[git add]
+    F --> G[git commit]
+    G --> H[git push]
+    H --> I[Pull Request / Merge Request]
+    I --> J[Code Review]
+    J --> K[Tests / CI]
+    K --> L{Conflicts?}
+    L -->|Yes| M[Resolve Conflicts]
+    M --> K
+    L -->|No| N[Merge]
+```
+
+| Step | What Happens |
+|---|---|
+| Clone | Get the repository locally (once) |
+| Create feature branch | Start isolated work without touching the stable branch |
+| Develop | Make the actual code/pipeline changes |
+| `git status` | Confirm exactly what changed |
+| Review changes | Read your own diff before staging it |
+| `git add` | Stage the intended changes |
+| `git commit` | Record a local snapshot with a meaningful message |
+| `git push` | Publish the branch to the remote |
+| Pull Request / Merge Request | Propose the change for review |
+| Code Review | A teammate reviews the diff |
+| Tests / CI | Automated checks run against the change |
+| Resolve conflicts if needed | Manually reconcile overlapping changes |
+| Merge | The change joins the stable branch, following the team's branching policy |
+
+---
+
+# Command Reference
+
+| Command | Purpose | Example | Data Engineering Relevance |
+|---|---|---|---|
+| `git status` | Show current state: modified/untracked/staged files, branch info | `git status` | Confirm exactly what a pipeline script change touches before staging |
+| `git add` | Stage a specific file's changes | `git add etl.py` | Stage only the ETL script you actually finished editing |
+| `git add .` | Stage changes under the current path | `git add .` | Quickly stage a batch of related config/script changes |
+| `git commit` | Record staged changes as a local snapshot | `git commit -m "Fix null handling in ingestion"` | Create a reviewable, revertible checkpoint in pipeline history |
+| `git push` | Send local commits to a remote branch | `git push origin main` | Publish a finished pipeline change for the team/CI to see |
+| `git pull` | Fetch + integrate remote changes into current branch | `git pull` | Sync your branch before starting new pipeline work |
+| `git fetch` | Download remote updates without integrating them | `git fetch` | Check what changed on `main` before deciding to merge |
+| `git clone` | Create a local copy of a remote repository | `git clone <url>` | Get the team's Data Engineering repo for the first time |
+| `git branch` | List/create local branches | `git branch feature/spark-etl` | Start isolated work on a new pipeline feature |
+| `git switch` | Switch between branches | `git switch feature/spark-etl` | Move between in-progress pipeline features |
+| `git merge` | Merge another branch into the current one | `git merge feature/spark-etl` | Bring a finished, reviewed feature into `main` |
+| `git remote` | Manage remote references | `git remote add origin <url>` | Point your local repo at the team's GitHub repository |
+| `git remote -v` | List configured remotes with URLs | `git remote -v` | Confirm which remote you're about to push to |
+| `git diff` | Show unstaged/uncommitted changes | `git diff` | Review exactly what changed in a script before staging it |
+| `git log` | Show commit history | `git log --oneline` | Trace when a bug was introduced into a pipeline |
+
+---
+
+# Important Additional Commands
+
+| Command | Simple Explanation |
+|---|---|
+| `git diff` | Shows the exact line-by-line changes that aren't staged yet |
+| `git log` | Shows the commit history |
+| `git log --oneline` | Shows the commit history in a compact, one-line-per-commit form |
+| `git show` | Shows the details/diff of a specific commit |
+| `git restore` | Discards changes in the working directory, reverting a file back to its last committed state |
+| `git restore --staged` | Unstages a file without discarding its changes (moves it back to the working directory) |
+
+```bash
+git diff
+git log --oneline
+git show <commit-hash>
+git restore file.py            # discard unstaged changes to file.py
+git restore --staged file.py   # unstage file.py, keep the edits
+```
+
+---
+
+# 🧠 Git Mental Model
+
+```mermaid
+flowchart LR
+    A[Edit] --> B[Status]
+    B --> C[Add]
+    C --> D[Commit]
+    D --> E[Push]
+    E --> F[Remote]
+    F --> G[Pull Request]
+    G --> H[Review]
+    H --> I[Merge]
+```
+
+**Where branches and conflicts fit:** Branches sit *around* this whole flow — each line of work (Edit → ... → Push) typically happens on its own branch, kept separate from `main`. Conflicts can appear at the **Merge** step, whenever two branches changed overlapping parts of the same file; resolving them is a manual detour before the merge can complete.
+
+---
+
+# 🎯 Git Interview Questions
+
+### 1. What is Git?
+Git is a distributed version control system used to track changes, maintain history, create branches, and collaborate safely on projects.
+
+### 2. What is a repository?
+A repository is a project managed by Git. It contains the project files plus Git metadata and history.
+
+### 3. Git vs GitHub?
+
+**Short Answer:**
+Git is the version-control software; GitHub is a hosting and collaboration platform built around Git repositories.
+
+**Strong Answer:**
+Git runs locally and manages history, branches, and commits on your machine. GitHub hosts remote copies of Git repositories and adds collaboration features on top — pull requests, issue tracking, CI/CD, code review — none of which are part of Git itself.
+
+**Possible Follow-up:** "Is GitHub the only way to use Git?"
+**Answer:** No — Git works entirely without GitHub. You can use Git locally, or host repositories on GitLab, Bitbucket, or a self-hosted server.
+
+### 4. What does `git add` do?
+
+**Short Answer:**
+`git add` stages changes for the next commit.
+
+**Strong Answer:**
+`git add` moves selected changes from the working tree into the staging area so I can choose exactly what should be included in the next commit.
+
+**Possible Follow-up:** "Does `git add` upload the file to GitHub?"
+**Answer:** No. `git add` only stages the change locally. The commit records it locally, and `git push` publishes the commit to the remote.
+
+### 5. What does `git commit` do?
+
+**Short Answer:**
+`git commit` records the staged changes as a new snapshot in local history.
+
+**Strong Answer:**
+`git commit -m "message"` takes whatever is currently in the staging area and records it as a new commit in the local repository's history, with a message describing the change.
+
+**Possible Follow-up:** "Does `git commit` send anything to the remote?"
+**Answer:** No — commit is entirely local. Nothing reaches the remote until `git push`.
+
+### 6. What does `git push` do?
+It transfers local commits to a configured remote repository/branch.
+
+### 7. What does `git pull` do?
+It fetches changes from a remote and integrates them into the current branch, commonly using merge, depending on configuration.
+
+### 8. `git clone` vs `git pull`?
+
+**Short Answer:**
+Clone gets a repository for the first time; pull updates a repository you already have.
+
+**Strong Answer:**
+`git clone` creates a brand-new local copy of a remote repository, including its full history — you use it once, when you don't yet have the repo locally. `git pull` fetches and integrates new changes into a local clone you already have — you use it repeatedly to stay up to date.
+
+### 9. `git fetch` vs `git pull`?
+
+**Short Answer:**
+Fetch downloads remote changes without touching your branch; pull downloads and integrates them.
+
+**Strong Answer:**
+`git fetch` downloads what's new on the remote but leaves your current branch untouched, so I can inspect incoming changes first. `git pull` does that fetch and then integrates the changes into my current branch — commonly via merge, though that depends on configuration.
+
+### 10. What is a branch?
+A branch is a separate line of development that lets engineers work on changes without immediately affecting another branch.
+
+### 11. Why do we use branches?
+They isolate features and fixes, reduce accidental interference, and support parallel team development and review.
+
+### 12. What is `git merge`?
+Merge integrates changes from one branch into the branch currently checked out.
+
+### 13. What is a merge conflict?
+It happens when Git cannot automatically reconcile competing changes, often because branches changed overlapping parts of a file. I resolve it manually, test the result, stage the resolved files, and complete the merge.
+
+### 14. How do you resolve a merge conflict?
+
+**Short Answer:**
+I open the conflicted file, decide which changes to keep, remove the conflict markers, test, then stage and complete the merge.
+
+**Strong Answer:**
+After a merge reports conflicts, I open each conflicted file and look at the sections marked with `<<<<<<<`, `=======`, and `>>>>>>>`. I decide whether to keep one side, the other, or a combination, remove the markers, save the file, and run tests to make sure the resolution is actually correct — not just conflict-marker-free. Then I `git add` the resolved files and complete the commit.
+
+**Possible Follow-up:** "Why run tests after resolving a conflict?"
+**Answer:** Because a manually resolved file can look syntactically fine but silently drop one side's logic — tests catch that in a way a visual read might miss.
+
+### 15. What is a fork?
+A fork is a hosted copy of a repository under another account or namespace, commonly used when I don't have direct write access to the original repository.
+
+### 16. Fork vs clone?
+
+**Short Answer:**
+Fork is a remote copy under your account; clone is a local copy on your machine.
+
+**Strong Answer:**
+A fork creates an independent, server-side copy of a repository under my own account or namespace — typically so I can contribute to a project I don't have write access to. A clone brings any repository (including my own fork) down to my local machine so I can actually work on it.
+
+### 17. What is `origin`?
+`origin` is just the conventional name for a remote — it's not the GitHub server itself. It's simply the default label Git uses for the remote you cloned from or configured.
+
+### 18. Why does a Data Engineer need Git?
+
+**Short Answer:**
+It gives version control and safe collaboration for pipeline code.
+
+**Strong Answer:**
+It gives me version control and collaboration for ETL code, SQL, Airflow DAGs, Spark jobs, configurations, and documentation — while enabling code review before changes reach production and a reliable way to roll back if a deployment breaks something.
+
+### 19. Should we store production datasets in Git?
+No — Git is built for versioning source code, configuration, and documentation, not large production datasets. That data belongs in a Data Lake, Data Warehouse, or object storage; Git tracks the code that produces and processes it, not the data itself.
+
+### 20. How would you use Git in a Data Engineering project?
+I'd version-control the ETL/ELT scripts, SQL transformations, Airflow DAGs, Spark job configs, and data-quality checks; work on changes in feature branches; open Pull Requests for review and CI; and rely on commit history to roll back if something breaks in a deployment.
+
+---
+
+## 🧠 Final Mental Model
+
+Git tracks changes locally and preserves project history. I edit files in the working tree, use `git add` to stage what I want, `git commit` to record a local version, and `git push` to publish commits to a remote. Branches isolate parallel work; merge integrates branches; conflicts require manual resolution. Clone creates a local copy of an existing remote repository, pull updates an existing clone, and fork creates a hosted copy under another account/namespace.
+
+---
+
+## ✅ Revision Checklist
+
+- [ ] Explain Git vs GitHub/GitLab
+- [ ] Explain repository
+- [ ] Explain working tree, staging area, local repo, remote repo
+- [ ] Explain `git status`
+- [ ] Explain `git add`
+- [ ] Explain `git commit`
+- [ ] Explain `git push`
+- [ ] Explain `git pull`
+- [ ] Explain `git clone`
+- [ ] Explain fetch vs pull
+- [ ] Explain branches
+- [ ] Explain merge
+- [ ] Explain merge conflicts and how to resolve them
+- [ ] Explain fork
+- [ ] Explain fork vs clone
+- [ ] Explain remotes and `origin`
+- [ ] Connect Git workflows to Data Engineering projects
+- [ ] Answer the interview questions naturally
+
+---
+
+## 🎯 Interview Readiness Checklist
+
+- [ ] I can explain Git in 30 seconds.
+- [ ] I can explain Git vs GitHub.
+- [ ] I can explain the working tree and staging area.
+- [ ] I can explain add → commit → push.
+- [ ] I can explain clone vs pull.
+- [ ] I can explain fetch vs pull.
+- [ ] I can explain branches.
+- [ ] I can explain merge.
+- [ ] I can resolve a merge conflict.
+- [ ] I can explain fork vs clone.
+- [ ] I can explain origin.
+- [ ] I can explain how Git is used in Data Engineering.
