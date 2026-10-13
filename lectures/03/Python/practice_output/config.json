@@ -1,0 +1,10 @@
+{
+  "pipeline_name": "orders_pipeline",
+  "source": "csv",
+  "enabled": true,
+  "retry_count": 3,
+  "tags": [
+    "python",
+    "data-engineering"
+  ]
+}
