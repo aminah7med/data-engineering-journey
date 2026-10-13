@@ -1,4 +1,4 @@
-﻿```python
+﻿
 """
 Python Fundamentals — Data Engineering Practice
 ================================================
@@ -1016,4 +1016,3 @@ if __name__ == "__main__":
 # The examples above are for learning. Production pipelines need
 # explicit error policies, tests, resource management, and
 # appropriate logging.
-```

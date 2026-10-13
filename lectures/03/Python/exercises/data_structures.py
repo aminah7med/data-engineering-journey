@@ -1,4 +1,4 @@
-﻿```python
+﻿
 """
 Python Data Structures — Data Engineering Practice
 ===================================================
@@ -960,4 +960,3 @@ if __name__ == "__main__":
 # Data structure choice affects correctness, memory usage,
 # performance, and maintainability. Always connect the choice
 # to the actual workload and its requirements.
-```
