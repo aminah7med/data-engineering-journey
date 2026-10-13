@@ -1,45 +1,45 @@
 # Data Engineering Journey 🚀
 
-مرحباً بك في مستودع "رحلة هندسة البيانات" — مكان منظم لتوثيق كل ما أتعلمه في هذا المجال من المفاهيم الأساسية إلى التطبيقات العملية والمشاريع الواقعية.
+Welcome to the "Data Engineering Journey" repository — a centralized place where I document everything I learn in the field of data engineering: core concepts, notes, comparisons, and useful references.
 
-هذا المستودع يهدف إلى جمع الملاحظات، الشروحات، وأفضل المراجع في مكان واحد، مع إمكانية التحديث المستمر أثناء رحلتي التعليمية والتطبيقية.
-
----
-
-## 🎯 الهدف
-
-- توثيق رحلتي في هندسة البيانات بشكل منظم واحترافي.
-- تنظيم الملاحظات والشرح النظري والمقارنات المهمة.
-- بناء مرجع شخصي سريع ومفيد للمراجعة والرجوع.
-- متابعة التقدم خلال مراحل التعلم المختلفة.
-- ممارسة Git وGitHub من خلال التوثيق المستمر.
-- إعداد قاعدة معرفية قوية يمكن استخدامها لاحقًا في المشاريع والتوظيف.
+This repository aims to bring together learning notes, explanations, and important references in one place, while continuing to grow and evolve as I progress.
 
 ---
 
-## 📚 مسار التعلم
+## 🎯 Goal
 
-سأغطي تدريجيًا الموضوعات التالية:
+- Document my data engineering journey in a structured and professional way.
+- Organize notes, theory, and important comparisons.
+- Build a quick personal reference for revision and future use.
+- Track progress across different learning stages.
+- Practice Git and GitHub through continuous documentation.
+- Create a solid knowledge base that can later support projects and job opportunities.
 
-- أساسيات هندسة البيانات
-- SQL وقواعد البيانات
-- مستودعات البيانات (Data Warehousing)
-- بحيرات البيانات (Data Lakes)
-- ETL وData Pipelines
-- البيانات الكبيرة (Big Data)
-- Hadoop وHDFS
+---
+
+## 📚 Learning Path
+
+I will gradually cover the following topics:
+
+- Data engineering fundamentals
+- SQL and databases
+- Data warehousing
+- Data lakes
+- ETL and data pipelines
+- Big data
+- Hadoop and HDFS
 - Apache Spark
 - Apache Kafka
-- هندسة البيانات على السحابة
-- نمذجة البيانات
-- معالجة البيانات
-- مشاريع هندسة البيانات
+- Cloud data engineering
+- Data modeling
+- Data processing
+- Data engineering projects
 
-> هذه القائمة ستتغير وتتنوع مع استمرار رحلتي في التعلم.
+> This roadmap will evolve as my learning continues.
 
 ---
 
-## 🗂️ هيكل المستودع
+## 🗂️ Repository Structure
 
 ```text
 data-engineering-journey/
@@ -52,33 +52,33 @@ data-engineering-journey/
 
 ---
 
-## ⬇️ كيفية تنزيل المستودع
+## ⬇️ How to Download the Repository
 
-### 1) عبر Git (الأفضل)
+### 1) Using Git (recommended)
 
 ```bash
 git clone https://github.com/aminah7med/data-engineering-journey.git
 ```
 
-إذا كنت تستخدم GitHub CLI:
+If you use GitHub CLI:
 
 ```bash
 gh repo clone aminah7med/data-engineering-journey
 ```
 
-### 2) تنزيل ملف ZIP
+### 2) Download as ZIP
 
-- افتح صفحة المستودع على GitHub.
-- اضغط على زر "Code".
-- اختر "Download ZIP".
+- Open the repository page on GitHub.
+- Click the "Code" button.
+- Choose "Download ZIP".
 
 ---
 
-## ▶️ كيفية البدء
+## ▶️ Getting Started
 
-بعد تنزيل المستودع، يمكنك فتح مجلد `lectures/` لمراجعة الملاحظات والمواد التعليمية، أو إضافة محتوى جديد حسب موضوعك الحالي.
+After downloading the repository, you can open the `lectures/` folder to review the notes and learning materials, or add new content based on the topics you are studying.
 
-### مثال سريع:
+Quick example:
 
 ```bash
 cd data-engineering-journey
@@ -87,39 +87,39 @@ ls
 
 ---
 
-## 🧩 كيفية المساهمة
+## 🧩 How to Contribute
 
-إذا كنت تريد إضافة محتوى جديد أو تحديث المستندات:
+If you want to add new content or update documents:
 
 ```bash
 git checkout -b update/readme
-# أو أي اسم فرع مناسب
+# or any meaningful branch name
 git add .
 git commit -m "Add: notes for SQL fundamentals"
 git push origin update/readme
 ```
 
-ثم افتح Pull Request في GitHub للمراجعة والدمج.
+Then open a Pull Request on GitHub for review and merge.
 
 ---
 
-## 📝 ملاحظات مهمة
+## 📝 Important Notes
 
-- استخدم أسماء واضحة ومؤثرة للملفات والمجلدات.
-- اكتب تعليقات أو رسائل Commit واضحة.
-- حافظ على الهيكل منظمًا وسهل المتابعة.
-- أضف مراجع خارجية عند الحاجة إلى توضيح مفهوم معين.
+- Use clear and meaningful file and folder names.
+- Write clear and descriptive commit messages.
+- Keep the structure organized and easy to follow.
+- Add external references when they help explain a concept.
 
 ---
 
-## 🎯 الخلاصة
+## 🎯 Summary
 
-هذا المستودع هو سجل تطوري في هندسة البيانات، ويهدف إلى جعل التعلم منظمًا، عمليًا، وقابلًا للتوسع مع الوقت.
+This repository is a record of my personal growth in data engineering, designed to make learning organized, practical, and scalable over time.
 
-إذا أردت، أستطيع أيضًا أن أجهز لك نسخة أكثر احترافية من README تشمل:
-- شارة (Badges)
-- قسم "Roadmap"
-- قائمة محتويات كاملة
-- قسم "Contributing"
-- قسم "License"
-- تنسيق بصري احترافي أكثر
+If you want, I can also prepare a more polished version of the README with:
+- Badges
+- A roadmap section
+- A full table of contents
+- A contribution section
+- A license section
+- A more professional visual style
