@@ -1,3 +1,0 @@
-Python for Data Engineering
-File handling practice
-Appended line
