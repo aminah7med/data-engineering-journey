@@ -1,22 +1,25 @@
 # Docker
 
-This section builds practical Docker knowledge for local development and data engineering workflows. Notes are study material; their existence does not indicate that a topic has been completed.
+This section builds practical Docker knowledge for local development and data engineering workflows. These notes are study material and hands-on exercises you can run locally. Status markers indicate study progress and are maintained by the author.
 
 ## Learning objectives
 
-- Explain Docker's architecture and the relationship between images, containers, registries, networks, and volumes.
-- Build small, reproducible, appropriately secured images.
+- Explain Docker architecture and the relationship between Dockerfile, image, container, registry, network, and volumes.
+- Build small, reproducible, secure images and understand build cache and multi-stage builds.
 - Run, inspect, troubleshoot, and clean up containers safely.
-- Use Compose to operate a local multi-service application.
-- Apply configuration and persistence practices suitable for data systems.
+- Use Compose to operate a local multi-service application (app + database) for development and testing.
+- Apply configuration and persistence practices suitable for data systems and local experiments.
 
 ## Prerequisites
 
-Basic command-line use, filesystems, networking, and Python are helpful. Install Docker Desktop on Windows (typically using its WSL 2 backend; Hyper-V is another supported configuration) or Docker Engine on Linux. Confirm the engine is running with `docker version` and `docker compose version`.
+- Comfortable with the command line (bash, PowerShell) and editing small text files.
+- Basic knowledge of filesystems and TCP ports.
+- Python knowledge helps for the examples included here.
+- Install Docker Desktop (Windows/macOS) or Docker Engine (Linux). On Windows prefer the WSL 2 backend for Linux containers.
 
-## Recommended sequence and table of contents
+## Recommended sequence (table of contents)
 
-| # | Topic | Notes | Status |
+| # | Topic | Link | Status |
 |---:|---|---|---|
 | 01 | Docker fundamentals | [Read](01-docker-fundamentals.md) | ⚪ Not Started |
 | 02 | Images and containers | [Read](02-images-and-containers.md) | ⚪ Not Started |
@@ -24,12 +27,10 @@ Basic command-line use, filesystems, networking, and Python are helpful. Install
 | 04 | Volumes and persistence | [Read](04-volumes-and-persistence.md) | ⚪ Not Started |
 | 05 | Networking | [Read](05-networking.md) | ⚪ Not Started |
 | 06 | Docker Compose | [Read](06-docker-compose.md) | ⚪ Not Started |
-| 07 | Environment variables | [Read](07-environment-variables.md) | ⚪ Not Started |
+| 07 | Environment variables & secrets | [Read](07-environment-variables.md) | ⚪ Not Started |
 | 08 | Troubleshooting | [Read](08-troubleshooting.md) | ⚪ Not Started |
 | 09 | Best practices | [Read](09-docker-best-practices.md) | ⚪ Not Started |
-| 10 | Interview questions | [Study](10-docker-interview-questions.md) | ⚪ Not Started |
-
-Suggested sequence: fundamentals → images/containers → Dockerfile/build → persistence and networking → Compose and configuration → troubleshooting and best practices → interview review.
+| 10 | Interview guide (study) | [Study](10-docker-interview-questions.md) | ⚪ Not Started |
 
 ## Practical exercises
 
@@ -37,35 +38,60 @@ Suggested sequence: fundamentals → images/containers → Dockerfile/build → 
 2. [Build a Python container](exercises/02-python-container/README.md) and pass runtime configuration.
 3. [Run Python with MySQL](exercises/03-python-mysql/README.md) using Compose, a health check, and persistent storage.
 
-## Commands to remember
+## Commands to remember (with explanation)
 
 ```bash
+# Show client and server version info
 docker version
+
+# Pull an image explicitly by tag
 docker pull nginx:1.27
+
+# List local images
 docker image ls
+
+# Build an image from the current directory (build context)
 docker build -t sample:dev .
+
+# Run a container in the background, map host port 8080 -> container 80
 docker run --name web -d -p 8080:80 nginx:1.27
-docker ps -a
+
+# Show running containers
+docker ps
+
+# Follow container logs (stdout/stderr)
 docker logs -f web
+
+# Inspect low-level runtime/configuration details
 docker inspect web
+
+# Run an interactive command inside a running container
 docker exec -it web sh
+
+# Stop and remove a container
 docker stop web && docker rm web
+
+# List and inspect volumes and networks
 docker volume ls
 docker network ls
+
+# Compose commands (modern `docker compose` plugin)
 docker compose up --build -d
 docker compose ps
 docker compose logs -f
-docker compose down                 # keeps named volumes
-docker compose down --volumes       # removes project volumes and their data
+# Remove containers and network but KEEP named volumes
+docker compose down
+# Remove containers, network AND named volumes (data lost)
+docker compose down --volumes
 ```
 
-On PowerShell, run chained commands on separate lines if shell syntax differs. `docker compose down` preserves named volumes; deleting a volume permanently deletes its stored data unless backed up elsewhere.
+Note: On PowerShell adjust quoting and escaping. `docker compose down` keeps named volumes by default. Deleting a volume permanently deletes its stored data unless backed up.
 
 ## Official references
 
-- [Docker Docs](https://docs.docker.com/)
-- [Get started](https://docs.docker.com/get-started/)
-- [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
-- [Compose file reference](https://docs.docker.com/reference/compose-file/)
-- [Volumes](https://docs.docker.com/engine/storage/volumes/)
-- [Networking](https://docs.docker.com/engine/network/)
+- https://docs.docker.com/
+- https://docs.docker.com/get-started/
+- https://docs.docker.com/engine/reference/builder/
+- https://docs.docker.com/compose/compose-file/
+- https://docs.docker.com/storage/volumes/
+- https://docs.docker.com/engine/network/
