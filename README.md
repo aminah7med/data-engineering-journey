@@ -6,20 +6,19 @@ A concise, evidence-based record of study and practical notes for foundational D
 
 - Purpose: Document learning materials (lecture notes, commands, and exercises) that build practical understanding of data engineering concepts and tooling.
 - Audience: Other learners, reviewers, and recruiters who want to see a structured study record and reference materials.
+## Learning Roadmap
 
-## Learning roadmap & direct navigation
+Explore the learning materials in the following order:
 
-Open the folders below to read the verified lecture notes and reference material.
+| Topic | Description | Resource |
+|---|---|---|
+| Data Engineering Fundamentals | Data lakes, data warehouses, OLTP vs. OLAP, schemas, and scalability | [Lecture 01](lectures/01/notes.md) |
+| Linux and Shell | Linux fundamentals, permissions, processes, shell scripting, and HDFS examples | [Lecture 02](lectures/02/notes.md) |
+| Git and GitHub | Version control, branching, commits, and repository workflows | [Git Notes](lectures/02/git.md) |
+| Python | Python fundamentals and topics relevant to Data Engineering | [Python Learning Path](lectures/03/Python/README.md) |
+| Docker | Container fundamentals, image building, networking, persistence, and Docker Compose | [Docker Learning Path](lectures/04/Docker/README.md) |
 
-- lectures/01/notes.md — Lecture 01: core data engineering concepts (data lake vs warehouse, OLTP vs OLAP, schemas, scaling, clusters).
-- lectures/02/notes.md — Lecture 02: Linux & shell fundamentals for data engineering (permissions, users, processes, shell scripting, HDFS examples).
-- lectures/02/git.md — Git & GitHub: repository workflows, branching, commits, merge/fix workflows and best practices.
-- lectures/03/Python/README.md — Python learning path and links to detailed topic notes and exercises (see the Python folder for individual files).
-  - lectures/03/Python/01-python-basics.md
-  - lectures/03/Python/11-python-for-data-engineering.md
-- lectures/04/Docker/README.md — Docker notes and exercise references for local development and container workflows.
-
-(Each link above is a relative path inside this repository and was verified to exist at the time of this edit.)
+Each section contains learning materials and references intended to support practical understanding. Explore the individual folders for detailed notes, exercises, and instructions.
 
 ## Technologies represented (based on repository contents)
 
