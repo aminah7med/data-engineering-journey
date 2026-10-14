@@ -31,7 +31,7 @@ Note: This repository is a study and notes collection. Technologies are listed b
 
 ## Repository structure (concise)
 
-```
+
 data-engineering-journey/
 ├── README.md
 ├── .gitignore
