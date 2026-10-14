@@ -16,6 +16,12 @@ Do not commit `.env` files containing credentials, bake secrets into image layer
 
 The Compose exercise demonstrates required `${VARIABLE:?message}` interpolation and documents local setup. Never use example credentials in a real system.
 
+**When a Data Engineer uses it:** provide database names, service hosts, feature options, and input locations as runtime configuration so the same image can run in a local exercise, a test job, or a deployment environment. Keep secrets in the chosen environment's secret store rather than source control.
+
+**Common mistakes:** assuming `.env` is always copied into a container; committing the real local file; assuming a variable set in Compose interpolation is automatically a container variable; and putting a password in a Dockerfile where it can remain in image metadata or layers.
+
+**Interview check:** Explain the difference between Compose interpolation and a service's `environment:` block. Why is a local `.env` file convenient, and why is it not a production secret manager?
+
 ## References
 
-[Environment variables in Compose](https://docs.docker.com/compose/how-tos/environment-variables/) · [Secrets in Compose](https://docs.docker.com/compose/how-tos/use-secrets/) · [Build secrets](https://docs.docker.com/build/building/secrets/)
+[Environment variables in Compose](https://docs.docker.com/compose/how-tos/environment-variables/) · [Set variables in containers](https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/) · [Secrets in Compose](https://docs.docker.com/compose/how-tos/use-secrets/) · [Build secrets](https://docs.docker.com/build/building/secrets/)

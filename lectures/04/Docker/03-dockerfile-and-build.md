@@ -2,6 +2,17 @@
 
 A Dockerfile is a text recipe (not YAML) that Docker uses to build an image. The **build context** is the set of files sent to the builder; `COPY` paths are resolved from this context, not from arbitrary host paths.
 
+```mermaid
+flowchart LR
+    F[Dockerfile] --> B[Build instructions]
+    C[Build context] -->|filtered by .dockerignore| B
+    B -->|steps and reusable cache| L[Image layers]
+    L --> I[Built image]
+    I --> R[Run-time container]
+```
+
+For a Data Engineer, build a job image from the project directory (context) so the dependency manifest and source are available. Excluding `.git`, local virtual environments, generated data, and `.env` files keeps builds quicker and avoids accidentally sending private material to the builder.
+
 ```dockerfile
 FROM python:3.12-slim
 WORKDIR /app
@@ -79,6 +90,10 @@ ENTRYPOINT ["/service"]
 ```
 
 Use trusted bases, update and scan dependencies, run as non-root where practical, and never copy credentials into an image. A build argument is not a safe secret store; use BuildKit secret mounts when a build truly requires secret access.
+
+**Common mistakes:** running `docker build` from a directory that does not contain the intended files; assuming `EXPOSE` opens a host port; using `latest` for an unnoticed version pin; putting secrets in an `ARG`, `ENV`, or copied config file; and installing dependencies after copying every source file, which unnecessarily invalidates the cache.
+
+**Interview check:** Explain why the dependency manifest is copied before application source. Describe how a changed source file affects cached layers and why a digest can make a base-image reference reproducible.
 
 ## References
 

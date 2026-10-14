@@ -25,6 +25,8 @@ Prefer runtime secrets or local-only placeholders in examples; never use this pl
 
 Database files should be stored on a named volume or deliberately managed persistent storage, not only in the container writable layer. Database backup should use database-aware tools and be stored separately; a volume is persistence, not a backup. Coordinate backups with the database to avoid inconsistent copies, and test restoration.
 
+**When a Data Engineer uses each:** use a named volume for a local database that should survive container replacement; use a bind mount when source or a data file should be edited directly on the host; use `tmpfs` for supported, short-lived data that should not be written to persistent storage. A bind-mounted database directory is possible but host ownership and filesystem behavior need care.
+
 `docker compose down` removes containers and networks but keeps named volumes. `docker compose down --volumes` removes project-managed volumes and permanently deletes their contents. Inspect volume names and ensure a verified backup exists before cleanup.
 
 ## Common mistakes
@@ -34,6 +36,8 @@ Database files should be stored on a named volume or deliberately managed persis
 - Using a host bind path that does not exist or has unsuitable permissions.
 - Assuming deleting a container also deletes its named volume (it normally does not).
 - Assuming a volume is automatically backed up or encrypted.
+
+**Interview check:** After `docker rm`, which state is lost? The container's own writable layer. A named volume normally remains. What does `docker compose down --volumes` do? It removes the project volumes too, so the mounted database data is deleted.
 
 ## References
 

@@ -14,6 +14,14 @@
 
 Avoid running a whole unrelated stack in one container, storing important state only in a writable layer, using `latest` as an unnoticed deployment pin, using `privileged` without a clear need, putting secrets in image build arguments, and treating a successful image build as a security review.
 
+## Development and production choices
+
+For local study, Compose may use a `.env` file with placeholders, bind-mount source for quick edits, and publish a web port for browser testing. Keep that setup clearly local. For production, use controlled image references, external secret management, deliberate network exposure, monitored resource limits, persistent storage with tested backups, and an update/scanning process. A Compose file can be used in deployment in some environments, but its presence alone does not provide production readiness.
+
+For a Data Engineering job image, pin Python dependencies, exclude data dumps and local virtual environments from the build context, log useful progress without logging credentials or sensitive records, and make the process exit code reflect success or failure so a scheduler can detect job outcomes.
+
+**Interview check:** A small image is not automatically a safe image. Which other controls would you review? Mention provenance, vulnerabilities, user privileges, secrets, network exposure, dependency updates, and runtime access.
+
 ## References
 
 [Docker build best practices](https://docs.docker.com/build/building/best-practices/) · [Docker security](https://docs.docker.com/engine/security/) · [Image attestations](https://docs.docker.com/build/metadata/attestations/)

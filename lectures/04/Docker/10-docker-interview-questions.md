@@ -19,9 +19,9 @@ docker compose version
 **Model answer:** An image is a read-only, layered template. A container is an instance created from that image, with runtime configuration and a writable layer. Multiple containers can share the same image while using different names, ports, environment variables, and mounts.
 
 ```bash
-docker pull nginx:1.27
-docker run --name web-a -d -p 8080:80 nginx:1.27
-docker run --name web-b -d -p 8081:80 nginx:1.27
+docker pull nginx:1.28.2
+docker run --name web-a -d -p 8080:80 nginx:1.28.2
+docker run --name web-b -d -p 8081:80 nginx:1.28.2
 docker ps
 ```
 
@@ -47,7 +47,7 @@ The push requires authentication and permission. Pinning content improves reprod
 **Model answer:** Docker resolves the image, pulls it if needed, creates a container with the requested configuration, and starts its main process. The container usually stops when that process exits.
 
 ```bash
-docker run --name web -d -p 8080:80 nginx:1.27
+docker run --name web -d -p 8080:80 nginx:1.28.2
 docker ps
 docker logs web
 ```
@@ -211,13 +211,32 @@ Do not commit real `.env` files, bake secrets into image layers, or print creden
 
 MySQL does not need a published host port for app-to-database communication on the Compose network.
 
+**Reasoning:** published ports serve clients outside the Compose network. Two services on the same network use internal DNS and the database's listening port. First confirm the app container has the expected `DB_HOST`, `DB_PORT`, database name, user, and password, then compare service health and logs. A typo and an unready server can produce similar connection errors, so check both configuration and readiness.
+
+```bash
+docker compose ps
+docker compose logs app db
+docker compose exec app python -c "import socket; print(socket.getaddrinfo('db', 3306))"
+```
+
+The last command only checks name resolution; it does not prove that MySQL accepted authentication or that a SQL query succeeds.
+
 ### 23. Database records disappeared after recreation. Why?
 Data may have been written only to the container layer, the volume may have been mounted at the wrong path, a different volume may have been used, or the volume may have been removed. Inspect mounts and volume names. Use a named volume for local persistence, but keep separate verified backups for important data.
 
 ### 24. A build is slow or the image is large. What do you do?
 Review build context size, `.dockerignore`, layer order, base image, and retained build artifacts. Copy stable dependency manifests before frequently changing source. Use multi-stage builds when build tools do not belong in the runtime image. Use `docker build --no-cache` for diagnosis, not as a routine optimization.
 
-### 25. How do you investigate high CPU or memory use?
+### 25. A port is published, but the application is unreachable. What do you check?
+First confirm the container is running and the host mapping is present (`docker ps` or `docker port <name>`). Read application logs. Confirm the process listens on the container interface, commonly `0.0.0.0:<container-port>`, rather than only `127.0.0.1` inside the container; check that the container port in `-p host:container` matches the listener. Then test the host port and check for host firewall or port conflicts. `EXPOSE` metadata does not create a listener or a host mapping.
+
+### 26. An application works on the host but fails in a container. Why?
+Compare the runtime environment rather than assuming Docker changed the code: verify that dependencies were installed into the image, required files are inside the build context and not ignored, configured paths and filename case match, environment variables were passed at runtime, the app listens on the expected interface, and the image architecture is compatible. Rebuild after Dockerfile or dependency changes, and inspect the container's logs. Host-only paths and services at `localhost` are common causes.
+
+### 27. A Compose app starts before its dependency is ready. What is the fix?
+Use a database health check that tests a meaningful readiness condition and set the app's `depends_on` condition to `service_healthy`. Keep bounded retry/backoff in the application: the database may restart after startup or become temporarily unavailable. Verify the health status and database logs rather than increasing a fixed sleep blindly.
+
+### 28. How do you investigate high CPU or memory use?
 Use `docker stats` to identify resource use, then inspect logs, application behavior, and resource configuration. Distinguish an application leak or workload spike from host pressure. Set appropriate resource limits and measure after changes.
 
 ```bash
@@ -226,18 +245,18 @@ docker inspect <container-name>
 docker logs --tail 200 <container-name>
 ```
 
-### 26. What are practical Docker security practices?
+### 29. What are practical Docker security practices?
 Use trusted, maintained base images; update dependencies deliberately; run as non-root where practical; minimize capabilities and unnecessary packages; keep secrets out of images; scan images; and restrict registry and runtime access. Pinning improves reproducibility but should not stop security updates. Containers are not automatically secure sandboxes.
 
-### 27. How does Docker help a Data Engineer?
+### 30. How does Docker help a Data Engineer?
 Docker provides repeatable environments for local databases, brokers, ingestion jobs, and integration tests. It can package Python jobs and help standardize development and CI. Compose can run a small set of related services locally.
 
 Docker does not replace orchestration, data-quality design, monitoring, backups, access control, or production operations. A containerized pipeline can still fail due to bad data, unavailable dependencies, poor retry logic, or resource limits.
 
-### 28. Docker vs Kubernetes?
+### 31. Docker vs Kubernetes?
 **Model answer:** Docker provides tools for building and running containers. Kubernetes orchestrates workloads across a cluster. Compose is useful for defining and running multi-container environments, especially locally; it is not a universal replacement for Kubernetes. For Docker fundamentals, understand the distinction without studying Kubernetes administration in depth.
 
-### 29. Why use an image digest instead of a tag?
+### 32. Why use an image digest instead of a tag?
 **Model answer:** Tags are convenient references but can move to different image content. A digest identifies exact content and improves artifact traceability and reproducibility. Teams still need a deliberate process for reviewing and adopting updated images rather than pinning forever.
 
 ## Hands-on practice

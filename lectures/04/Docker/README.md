@@ -16,6 +16,7 @@ This section builds practical Docker knowledge for local development and data en
 - Basic knowledge of filesystems and TCP ports.
 - Python knowledge helps for the examples included here.
 - Install Docker Desktop (Windows/macOS) or Docker Engine (Linux). On Windows prefer the WSL 2 backend for Linux containers.
+- Check that the daemon is reachable with `docker version` (the **Server** section should appear), and that Compose v2 is available with `docker compose version`.
 
 ## Recommended sequence (table of contents)
 
@@ -32,11 +33,23 @@ This section builds practical Docker knowledge for local development and data en
 | 09 | Best practices | [Read](09-docker-best-practices.md) | ⚪ Not Started |
 | 10 | Interview guide (study) | [Study](10-docker-interview-questions.md) | ⚪ Not Started |
 
+The table order is the suggested order: learn one lesson, run its related commands, then attempt the matching exercise before moving on. Status shows study progress, not whether a file exists.
+
 ## Practical exercises
 
 1. [Run Nginx](exercises/01-nginx/README.md) and practice the container lifecycle.
 2. [Build a Python container](exercises/02-python-container/README.md) and pass runtime configuration.
 3. [Run Python with MySQL](exercises/03-python-mysql/README.md) using Compose, a health check, and persistent storage.
+
+## Study completion checklist
+
+- [ ] I can explain the client, daemon, image, container, registry, and kernel relationship in my own words.
+- [ ] I can build an image, run and inspect a container, read its logs, and explain its exit status.
+- [ ] I can explain the build context, `.dockerignore`, cache, `CMD`/`ENTRYPOINT`, and `EXPOSE`/published ports.
+- [ ] I can choose between a writable layer, named volume, and bind mount, and describe the data lost by each cleanup command.
+- [ ] I can connect Compose services by name and explain why `localhost` inside a container refers to itself.
+- [ ] I can diagnose a database readiness failure and keep credentials out of source and images.
+- [ ] I have run all three exercises and can troubleshoot them without copying the commands blindly.
 
 ## Commands to remember (with explanation)
 
@@ -45,7 +58,7 @@ This section builds practical Docker knowledge for local development and data en
 docker version
 
 # Pull an image explicitly by tag
-docker pull nginx:1.27
+docker pull nginx:1.28.2
 
 # List local images
 docker image ls
@@ -54,7 +67,7 @@ docker image ls
 docker build -t sample:dev .
 
 # Run a container in the background, map host port 8080 -> container 80
-docker run --name web -d -p 8080:80 nginx:1.27
+docker run --name web -d -p 8080:80 nginx:1.28.2
 
 # Show running containers
 docker ps
@@ -89,9 +102,13 @@ Note: On PowerShell adjust quoting and escaping. `docker compose down` keeps nam
 
 ## Official references
 
-- https://docs.docker.com/
-- https://docs.docker.com/get-started/
-- https://docs.docker.com/engine/reference/builder/
-- https://docs.docker.com/compose/compose-file/
-- https://docs.docker.com/storage/volumes/
-- https://docs.docker.com/engine/network/
+- [Docker Docs](https://docs.docker.com/)
+- [Get started](https://docs.docker.com/get-started/)
+- [Dockerfile reference](https://docs.docker.com/reference/dockerfile/)
+- [Compose file reference](https://docs.docker.com/reference/compose-file/)
+- [Compose environment variables](https://docs.docker.com/compose/how-tos/environment-variables/)
+- [Compose startup order](https://docs.docker.com/compose/how-tos/startup-order/)
+- [Volumes](https://docs.docker.com/engine/storage/volumes/)
+- [Networking in Compose](https://docs.docker.com/compose/how-tos/networking/)
+
+Image families used in the examples (`python:3.12-slim`, `mysql:8.4`, and Nginx `1.28.2`) were checked against their official image listings on 2026-10-14. Version-family tags such as `3.12-slim` and `8.4` can move as patch releases are updated; use a digest when exact image identity is required, and update pinned content deliberately for security fixes.
