@@ -1,8 +1,8 @@
 import os
 import time
 
-import mysql.connector
-from mysql.connector import Error
+import mysql.connector  # pyright: ignore[reportMissingImports]
+from mysql.connector import Error  # pyright: ignore[reportMissingImports]
 
 
 def connect_with_retry(attempts: int = 30, delay_seconds: int = 2):
