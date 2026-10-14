@@ -1,125 +1,76 @@
-# Data Engineering Journey 🚀
+# Data Engineering Journey
 
-Welcome to the "Data Engineering Journey" repository — a centralized place where I document everything I learn in the field of data engineering: core concepts, notes, comparisons, and useful references.
+A concise, evidence-based record of study and practical notes for foundational Data Engineering topics. This repository collects lecture notes, command references, and practical guidance used during learning and practice. It is intended as a navigable study log — not a production codebase.
 
-This repository aims to bring together learning notes, explanations, and important references in one place, while continuing to grow and evolve as I progress.
+## Overview
 
----
+- Purpose: Document learning materials (lecture notes, commands, and exercises) that build practical understanding of data engineering concepts and tooling.
+- Audience: Other learners, reviewers, and recruiters who want to see a structured study record and reference materials.
 
-## 🎯 Goal
+## Learning roadmap & direct navigation
 
-- Document my data engineering journey in a structured and professional way.
-- Organize notes, theory, and important comparisons.
-- Build a quick personal reference for revision and future use.
-- Track progress across different learning stages.
-- Practice Git and GitHub through continuous documentation.
-- Create a solid knowledge base that can later support projects and job opportunities.
+Open the folders below to read the verified lecture notes and reference material.
 
----
+- lectures/01/notes.md — Lecture 01: core data engineering concepts (data lake vs warehouse, OLTP vs OLAP, schemas, scaling, clusters).
+- lectures/02/notes.md — Lecture 02: Linux & shell fundamentals for data engineering (permissions, users, processes, shell scripting, HDFS examples).
+- lectures/02/git.md — Git & GitHub: repository workflows, branching, commits, merge/fix workflows and best practices.
+- lectures/03/Python/README.md — Python learning path and links to detailed topic notes and exercises (see the Python folder for individual files).
+  - lectures/03/Python/01-python-basics.md
+  - lectures/03/Python/11-python-for-data-engineering.md
+- lectures/04/Docker/README.md — Docker notes and exercise references for local development and container workflows.
 
-## 📚 Learning Path
+(Each link above is a relative path inside this repository and was verified to exist at the time of this edit.)
 
-I will gradually cover the following topics:
+## Technologies represented (based on repository contents)
 
-- Data engineering fundamentals
-- SQL and databases
-- Data warehousing
-- Data lakes
-- ETL and data pipelines
-- Big data
-- Hadoop and HDFS
-- Apache Spark
-- Apache Kafka
-- Cloud data engineering
-- Data modeling
-- Data processing
-- Data engineering projects
+- Python — primary programming language used in lecture notes and exercises.
+- Git / GitHub — detailed notes and workflows in `lectures/02/git.md`.
+- Docker — documented in `lectures/04/Docker/README.md` and related exercises.
+- HDFS / Hadoop / Spark — discussed in lecture notes as conceptual and command examples (see `lectures/01/notes.md` and `lectures/02/notes.md`).
 
-> This roadmap will evolve as my learning continues.
+Note: This repository is a study and notes collection. Technologies are listed because the materials discuss or demonstrate them; this is not a deployable pipeline repository.
 
----
+## Repository structure (concise)
 
-## 🗂️ Repository Structure
-
-```text
+```
 data-engineering-journey/
 ├── README.md
-├── lectures/
-│   └── 0*/
-│       └── notes.md
-└── ...
+├── .gitignore
+└── lectures/
+    ├── 01/                      # Lecture 01 notes (data engineering fundamentals)
+    │   └── notes.md
+    ├── 02/                      # Linux fundamentals, shell examples, and Git notes
+    │   ├── notes.md
+    │   └── git.md
+    ├── 03/
+    │   └── Python/              # Python topic notes and exercises (many files)
+    │       └── README.md
+    └── 04/
+        └── Docker/              # Docker study notes and exercises
+            └── README.md
 ```
 
----
+## How to use these materials
 
-## ⬇️ How to Download the Repository
-
-### 1) Using Git (recommended)
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/aminah7med/data-engineering-journey.git
 ```
 
-If you use GitHub CLI:
+2. Read the lecture notes in order to follow the author's learning sequence. Start with:
+   - `lectures/01/notes.md` (conceptual foundations)
+   - `lectures/02/notes.md` (practical Linux & HDFS examples) and `lectures/02/git.md` (source control practices)
 
-```bash
-gh repo clone aminah7med/data-engineering-journey
-```
+3. Explore `lectures/03/Python/README.md` for the Python topic index and the individual topic files.
 
-### 2) Download as ZIP
+4. Follow any per-folder instructions (run scripts or exercises) that appear inside each lecture folder. Execution steps and dependencies are documented per lecture where required.
 
-- Open the repository page on GitHub.
-- Click the "Code" button.
-- Choose "Download ZIP".
+## Contribution and edits
 
----
+- If you want to suggest changes, open a branch, make edits, and submit a pull request. Keep changes focused to the relevant lecture folder.
+- This README was updated to improve navigation and factual accuracy; no lecture content was modified.
 
-## ▶️ Getting Started
+## Closing
 
-After downloading the repository, you can open the `lectures/` folder to review the notes and learning materials, or add new content based on the topics you are studying.
-
-Quick example:
-
-```bash
-cd data-engineering-journey
-ls
-```
-
----
-
-## 🧩 How to Contribute
-
-If you want to add new content or update documents:
-
-```bash
-git checkout -b update/readme
-# or any meaningful branch name
-git add .
-git commit -m "Add: notes for SQL fundamentals"
-git push origin update/readme
-```
-
-Then open a Pull Request on GitHub for review and merge.
-
----
-
-## 📝 Important Notes
-
-- Use clear and meaningful file and folder names.
-- Write clear and descriptive commit messages.
-- Keep the structure organized and easy to follow.
-- Add external references when they help explain a concept.
-
----
-
-## 🎯 Summary
-
-This repository is a record of my personal growth in data engineering, designed to make learning organized, practical, and scalable over time.
-
-If you want, I can also prepare a more polished version of the README with:
-- Badges
-- A roadmap section
-- A full table of contents
-- A contribution section
-- A license section
-- A more professional visual style
+This repository is a focused study record and reference for fundamental data engineering concepts and practice. For questions about specific lecture content, open the relevant file under `lectures/` and raise an issue or PR with suggested improvements.
