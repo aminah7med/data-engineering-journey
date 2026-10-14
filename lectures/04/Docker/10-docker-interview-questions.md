@@ -36,7 +36,7 @@ On Windows, Docker Desktop commonly runs Linux containers in a lightweight Linux
 **Model answer:** A registry stores and distributes container images. Docker Hub is one registry; organizations can use private registries as well. Tags are human-readable references and can move; digests identify exact image content.
 
 ```bash
-docker pull nginx:1.27
+docker pull nginx:1.28.2
 docker tag my-app:dev registry.example/my-app:1.0
 docker push registry.example/my-app:1.0
 ```
