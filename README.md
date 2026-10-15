@@ -17,6 +17,7 @@ Explore the learning materials in the following order:
 | Git and GitHub | Version control, branching, commits, and repository workflows | [Git Notes](lectures/02/git.md) |
 | Python | Python fundamentals and topics relevant to Data Engineering | [Python Learning Path](lectures/03/Python/README.md) |
 | Docker | Container fundamentals, image building, networking, persistence, and Docker Compose | [Docker Learning Path](lectures/04/Docker/README.md) |
+| SQL | Relational databases, query design, SQL for Data Engineering, and practical analytics patterns | [SQL Learning Path](lectures/05/SQL/README.md) |
 
 Each section contains learning materials and references intended to support practical understanding. Explore the individual folders for detailed notes, exercises, and instructions.
 
