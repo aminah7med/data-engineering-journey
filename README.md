@@ -45,8 +45,11 @@ data-engineering-journey/
     ├── 03/
     │   └── Python/              # Python topic notes and exercises (many files)
     │       └── README.md
-    └── 04/
-        └── Docker/              # Docker study notes and exercises
+    ├── 04/
+    │   └── Docker/              # Docker study notes and exercises
+    │       └── README.md
+    └── 05/
+        └── SQL/                 # SQL fundamentals, exercises, and Data Engineering practice
             └── README.md
 ```
 
