@@ -18,6 +18,7 @@ Explore the learning materials in the following order:
 | Python | Python fundamentals and topics relevant to Data Engineering | [Python Learning Path](lectures/03/Python/README.md) |
 | Docker | Container fundamentals, image building, networking, persistence, and Docker Compose | [Docker Learning Path](lectures/04/Docker/README.md) |
 | SQL | Relational databases, query design, SQL for Data Engineering, and practical analytics patterns | [SQL Learning Path](lectures/05/SQL/README.md) |
+| NoSQL | NoSQL data models, MongoDB, document design, and Data Engineering practice | [NoSQL Learning Path](lectures/06/NoSQL/README.md) |
 
 Each section contains learning materials and references intended to support practical understanding. Explore the individual folders for detailed notes, exercises, and instructions.
 
@@ -48,8 +49,11 @@ data-engineering-journey/
     ├── 04/
     │   └── Docker/              # Docker study notes and exercises
     │       └── README.md
-    └── 05/
+    ├── 05/
         └── SQL/                 # SQL fundamentals, exercises, and Data Engineering practice
+            └── README.md
+    └── 06/
+        └── NoSQL/               # NoSQL concepts, MongoDB lessons, and exercises
             └── README.md
 ```
 

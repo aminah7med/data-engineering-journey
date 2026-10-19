@@ -1,0 +1,148 @@
+{
+  "customers": [
+    {
+      "_id": "c-101",
+      "customer_id": 101,
+      "name": "Ahmed Hassan",
+      "email": "ahmed@example.test",
+      "city": "Cairo",
+      "address": { "city": "Cairo", "country": "Egypt" },
+      "tags": ["newsletter", "returning"],
+      "joined_at": "2025-11-10T09:00:00Z"
+    },
+    {
+      "_id": "c-102",
+      "customer_id": 102,
+      "name": "Mona Ali",
+      "email": "mona@example.test",
+      "city": "Alexandria",
+      "address": { "city": "Alexandria", "country": "Egypt" },
+      "tags": ["mobile_app"],
+      "joined_at": "2026-01-15T10:30:00Z",
+      "loyalty_tier": "silver"
+    },
+    {
+      "_id": "c-103",
+      "customer_id": 103,
+      "name": "Omar Nabil",
+      "email": "omar@example.test",
+      "city": "Cairo",
+      "address": { "city": "Cairo", "country": "Egypt" },
+      "tags": [],
+      "joined_at": "2026-02-01T12:00:00Z",
+      "loyalty_tier": null
+    },
+    {
+      "_id": "c-104-a",
+      "customer_id": 104,
+      "name": "Salma Youssef",
+      "email": "salma@example.test",
+      "city": "Giza",
+      "address": { "city": "Giza", "country": "Egypt" },
+      "tags": ["newsletter"],
+      "joined_at": "2026-03-12T08:15:00Z"
+    },
+    {
+      "_id": "c-104-b",
+      "customer_id": 104,
+      "name": "Salma Y.",
+      "email": "salma.duplicate@example.test",
+      "city": "Giza",
+      "address": { "city": "Giza", "country": "Egypt" },
+      "tags": ["imported"],
+      "joined_at": "2026-03-12T08:15:00Z",
+      "source": "legacy_import"
+    }
+  ],
+  "orders": [
+    {
+      "_id": "o-5001",
+      "order_id": "o-5001",
+      "customer_id": 101,
+      "order_date": "2026-04-02T11:20:00Z",
+      "status": "paid",
+      "items": [
+        { "product_id": "p-10", "quantity": 2, "unit_price": 19.99 },
+        { "product_id": "p-20", "quantity": 1, "unit_price": 12.5 }
+      ],
+      "total": 52.48,
+      "coupon_code": "WELCOME"
+    },
+    {
+      "_id": "o-5002",
+      "order_id": "o-5002",
+      "customer_id": 102,
+      "order_date": "2026-04-03T14:05:00Z",
+      "status": "shipped",
+      "items": [
+        { "product_id": "p-30", "quantity": 1, "unit_price": 49.0 }
+      ],
+      "total": 49.0,
+      "coupon_code": null
+    },
+    {
+      "_id": "o-5003",
+      "order_id": "o-5003",
+      "customer_id": 101,
+      "order_date": "2026-04-05T09:45:00Z",
+      "status": "pending",
+      "items": [
+        { "product_id": "p-20", "quantity": 3, "unit_price": 12.5 },
+        { "product_id": "p-10", "quantity": 1, "unit_price": 19.99 }
+      ],
+      "total": 57.49
+    },
+    {
+      "_id": "o-5004",
+      "order_id": "o-5004",
+      "customer_id": 103,
+      "order_date": "2026-04-06T16:30:00Z",
+      "status": "paid",
+      "items": [
+        { "product_id": "p-10", "quantity": 1, "unit_price": 19.99 }
+      ],
+      "total": 19.99,
+      "coupon_code": "SPRING"
+    },
+    {
+      "_id": "o-5005",
+      "order_id": "o-5005",
+      "customer_id": 104,
+      "order_date": "2026-04-07T10:10:00Z",
+      "status": "paid",
+      "items": [
+        { "product_id": "p-30", "quantity": 2, "unit_price": 49.0 }
+      ],
+      "total": 98.0
+    }
+  ],
+  "products": [
+    {
+      "_id": "p-10",
+      "product_id": "p-10",
+      "name": "Canvas Backpack",
+      "category": "Accessories",
+      "price": 19.99,
+      "active": true,
+      "attributes": { "color": "navy", "material": "canvas" }
+    },
+    {
+      "_id": "p-20",
+      "product_id": "p-20",
+      "name": "Ceramic Mug",
+      "category": "Home",
+      "price": 12.5,
+      "active": true,
+      "attributes": { "color": "white", "capacity_ml": 350 }
+    },
+    {
+      "_id": "p-30",
+      "product_id": "p-30",
+      "name": "Desk Lamp",
+      "category": "Home",
+      "price": 49.0,
+      "active": true,
+      "attributes": { "color": "black", "bulb_type": "LED" }
+    }
+  ]
+}
