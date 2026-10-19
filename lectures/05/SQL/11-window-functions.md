@@ -38,7 +38,7 @@ Window functions allow analytics-style logic without losing row-level output. Th
 
 A data engineer may compute rolling revenue, rank product sales by region, or identify the latest record per customer while retaining the full dataset.
 
-## Interview questions
+## Interview questions --
 
 - What is a window function?
 - How is `ROW_NUMBER()` different from `RANK()`?
