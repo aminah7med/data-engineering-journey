@@ -6,7 +6,7 @@ Attempt the prompts first. These notes are reasoning hints and query patterns, n
 
 - Customers contain scalar fields, a nested `address` document, and a `tags` array. Orders contain a `Date`-typed `order_date` after import and an `items` array of nested item documents. Products have nested `attributes`.
 - Customer 101 has `loyalty_tier` absent; customer 103 has it present with `null`. Use `$exists: false` for absence and `{ $exists: true, $eq: null }` for explicit null.
-- Customer 104 appears twice with distinct `_id` values (`c-104-a` and `c-104-b`); the business identifier is duplicated and should not be used as a unique key until resolved.
+- Customer 104 appears twice with distinct `_id` values (`c-104-a` and `c-104-b`); the business identifier is duplicated and should not be used as a unique key until resolved. The sample also has one missing customer ID and one explicitly null ID; inspect these separately because a group by business ID can collect both under a null group key.
 - Embedding item purchase price/name snapshots can preserve the historical transaction. A product reference can locate current catalog details. Store both only when each serves a defined requirement.
 - Keeping an unbounded order history inside a customer document risks growth and size limits and makes order filtering harder. Separate order documents fit independent order queries.
 
@@ -101,4 +101,4 @@ db.orders.find({ coupon_code: { $exists: false } });
 db.orders.find({ coupon_code: { $exists: true, $eq: null } });
 ```
 
-`{ coupon_code: null }` matches either case. The sample's `o-5002` has explicit null; `o-5003` and `o-5005` omit the field. Do not add a unique index on `customer_id` until duplicates and invalid IDs have been resolved under a documented rule. For order references, compare the distinct `customer_id` values to the customer set and item product IDs to the product set; flag unmatched records for quarantine or remediation rather than silently dropping them.
+`{ coupon_code: null }` matches either case. The sample's `o-5002` has explicit null; `o-5003` and `o-5005` omit the field. For customers, `c-missing-id` omits `customer_id` while `c-null-id` explicitly sets it to null. Do not add a unique index on `customer_id` until duplicates and invalid IDs have been resolved under a documented rule. For order references, compare the distinct `customer_id` values to the customer set and item product IDs to the product set; flag unmatched records for quarantine or remediation rather than silently dropping them.

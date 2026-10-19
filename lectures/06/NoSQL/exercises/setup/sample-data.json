@@ -52,6 +52,21 @@
       "tags": ["imported"],
       "joined_at": "2026-03-12T08:15:00Z",
       "source": "legacy_import"
+    },
+    {
+      "_id": "c-missing-id",
+      "name": "Incomplete Record",
+      "city": "Cairo",
+      "tags": [],
+      "source": "incomplete_import"
+    },
+    {
+      "_id": "c-null-id",
+      "customer_id": null,
+      "name": "Null Identifier Record",
+      "city": "Alexandria",
+      "tags": [],
+      "source": "incomplete_import"
     }
   ],
   "orders": [

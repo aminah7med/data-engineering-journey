@@ -10,4 +10,4 @@ Use only read-only checks against the practice collections.
 6. Propose an ingestion rule to prevent duplicate source events from creating repeated orders. Include an idempotency key or unique business constraint in the design.
 7. Would you immediately create a unique index on `customers.customer_id`? Explain the precondition and remediation steps.
 
-The sample deliberately contains two customers with `customer_id: 104`, one order with `coupon_code: null`, and other orders where that field is missing.
+The sample deliberately contains two customers with `customer_id: 104`, one customer with a missing `customer_id`, another with `customer_id: null`, one order with `coupon_code: null`, and other orders where that field is missing.
