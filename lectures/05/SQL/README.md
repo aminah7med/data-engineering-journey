@@ -71,6 +71,7 @@ Use the scripts in `exercises/setup/` to create the schema and seed the data. Th
 | 19 | SQL for Data Engineering | [19-sql-for-data-engineering.md](19-sql-for-data-engineering.md) |
 | 20 | SQL Interview Questions | [20-sql-interview-questions.md](20-sql-interview-questions.md) |
 | 21 | Views | [21-views.md](21-views.md) |
+| 22 | Database Normalization | [22-normalization.md](22-normalization.md) |
 
 ## Exercises and solutions
 
