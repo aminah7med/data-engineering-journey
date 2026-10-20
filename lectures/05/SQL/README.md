@@ -72,6 +72,7 @@ Use the scripts in `exercises/setup/` to create the schema and seed the data. Th
 | 20 | SQL Interview Questions | [20-sql-interview-questions.md](20-sql-interview-questions.md) |
 | 21 | Views | [21-views.md](21-views.md) |
 | 22 | Database Normalization | [22-normalization.md](22-normalization.md) |
+| 23 | Stored Functions and Procedures | [23-stored-functions-and-procedures.md](23-stored-functions-and-procedures.md) |
 
 ## Exercises and solutions
 
