@@ -25,21 +25,7 @@ GROUP BY category;
 
 ## String functions
 
-String functions transform or extract text. The following examples use customer names and product names from the schema:
-
-```sql
-SELECT
-    customer_id,
-    LOWER(email) AS normalized_email,
-    UPPER(city) AS city_label,
-    CONCAT(first_name, ' ', last_name) AS full_name,
-    TRIM(product_name) AS cleaned_product_name,
-    SUBSTRING(product_name, 1, 5) AS name_prefix
-FROM customers
-CROSS JOIN products;
-```
-
-This demonstrates valid functions, but the `CROSS JOIN` creates every customer/product combination and is usually not needed just to demonstrate text functions. In ordinary queries, apply functions to columns from the table being read:
+String functions transform or extract text. Apply them to the columns in the table being queried:
 
 ```sql
 SELECT
@@ -126,7 +112,7 @@ WHERE order_date >= CURRENT_DATE - INTERVAL 30 DAY
   AND order_date < CURRENT_DATE + INTERVAL 1 DAY;
 ```
 
-This example includes the last 30 days and today up to the start of tomorrow. Keeping the indexed column unmodified can allow an index range scan; verify with `EXPLAIN` for the actual query and data.
+This example covers dates from 30 days before today through today. Keeping the indexed column unmodified can allow an index range scan; verify with `EXPLAIN` for the actual query and data.
 
 ## NULL-handling functions
 
@@ -135,29 +121,20 @@ This example includes the last 30 days and today up to the start of tomorrow. Ke
 ```sql
 SELECT
     customer_id,
-    COALESCE(city, 'Unknown') AS city_for_report
+    COALESCE(NULLIF(TRIM(email), ''), 'missing_email') AS email_for_report
 FROM customers;
 ```
 
-This replaces a missing city with a display value in the result; it does not update stored data.
+`TRIM()` removes surrounding spaces, `NULLIF()` turns an empty string into `NULL`, and `COALESCE()` supplies a reporting label for either a `NULL` or blank email. The expression changes only the query result; it does not update stored data.
 
 ```sql
 SELECT
-    order_id,
-    total_amount / NULLIF(total_amount, 0) AS safe_ratio_example
-FROM orders;
+    SUM(quantity * unit_price) / NULLIF(SUM(quantity), 0) AS weighted_gross_unit_price
+FROM order_items
+WHERE item_status = 'active';
 ```
 
-`NULLIF()` is often used to prevent division by zero. The expression above is syntactically valid but yields `1` for nonzero `total_amount`; a more typical use is to divide by a potentially zero count:
-
-```sql
-SELECT
-    SUM(total_amount) / NULLIF(COUNT(*), 0) AS average_order_value
-FROM orders
-WHERE status = 'paid';
-```
-
-`COUNT(*)` cannot be zero in this aggregate query without `GROUP BY` (it returns one row with a count of zero), but the `NULLIF()` pattern is useful in grouped calculations or when the denominator is a computed value. `COALESCE()` and `NULLIF()` do not make `NULL` behave like an ordinary value; they explicitly handle it. For broader `NULL` and conditional-expression behavior, see [CASE and NULL Handling](08-case-and-null-handling.md).
+Here, `NULLIF()` changes a zero total quantity into `NULL`, preventing division by zero. The result is the weighted gross unit price before discounts; if no active items exist or the total quantity is zero, the result is `NULL`. `COALESCE()` and `NULLIF()` do not make `NULL` behave like an ordinary value; they explicitly handle it. For broader `NULL` and conditional-expression behavior, see [CASE and NULL Handling](08-case-and-null-handling.md).
 
 ## Function categories at a glance
 
@@ -171,7 +148,7 @@ WHERE status = 'paid';
 
 ## Built-in functions, user-defined functions, and stored procedures
 
-Built-in functions such as `LOWER()` and `DATE_ADD()` are provided by MySQL. A **user-defined function (UDF)** is created or installed by a database user or extension to provide a reusable function not supplied as a built-in; it returns a value and can be used in expressions subject to MySQL's rules. A **stored procedure** is a separately invoked routine that can execute a sequence of SQL statements and may accept parameters and return result sets or output parameters. A procedure is not simply another scalar expression.
+Built-in functions such as `LOWER()` and `DATE_ADD()` are provided by MySQL. A **stored function** is a SQL routine created with `CREATE FUNCTION`; it returns a value and can be called in expressions subject to MySQL's rules. A loadable **user-defined function (UDF)** extends MySQL with a function supplied by an installed component, typically written in C or C++. A **stored procedure**, created with `CREATE PROCEDURE`, is invoked separately and can execute a sequence of statements; it may accept parameters and return result sets or output parameters. A procedure is not simply another scalar expression.
 
 ## Important notes and common mistakes
 
