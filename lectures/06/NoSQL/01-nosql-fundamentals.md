@@ -8,7 +8,7 @@ Different models—key-value, document, wide-column, and graph—optimize for di
 
 ## Why these systems exist
 
-Applications handle structured data, semi-structured data, and sometimes unstructured data. Examples include relational records, JSON documents with optional fields, application logs, images or other files, and key-value data. NoSQL does not mean that all data is unstructured; the important question is which data model and access patterns fit the workload.
+Applications handle structured data, semi-structured data, and sometimes unstructured data. Examples include rows in relational tables, JSON documents with optional fields, application logs, images or other files, and key-value data. NoSQL does not mean that all data is unstructured; the important question is which data model and access patterns fit the workload.
 
 Applications also have varied requirements: flexible or evolving records, very high request volume, low-latency key lookups, large distributed datasets, or queries across highly connected entities. NoSQL databases provide different models for these needs. A flexible data model can allow records to have different fields, but it does not remove schema requirements: applications still need contracts for expected fields, types, and validation.
 
