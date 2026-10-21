@@ -12,11 +12,11 @@ Value: { "customer_id": 101, "expires_at": "2026-10-20T12:00:00Z" }
 Redis is an example of a key-value database. Its primary command interface uses commands such as `SET` and `GET`; applications commonly access it with a client library, and developers can run commands interactively with `redis-cli`.
 
 ```text
-SET session:9f31 "{\"customer_id\":101}"
+SET session:9f31 "{\"customer_id\":101}" EX 3600
 GET session:9f31
 ```
 
-Redis also supports data structures and additional interfaces, but it does not use SQL as its primary command interface. Its persistence, replication, expiration, and other behavior depend on configuration and the Redis version or deployment.
+`SET` stores or replaces the value associated with a key; `GET` retrieves the value for that key. The optional `EX 3600` sets a 3,600-second expiration. Redis also supports data structures and additional interfaces, but it does not use SQL as its primary command interface. Its persistence, replication, expiration, and other behavior depend on configuration and the Redis version or deployment.
 
 ## Python dictionary analogy
 
@@ -44,6 +44,14 @@ This analogy explains key-based lookup, not database equivalence. A Python dicti
 A key-value model is not automatically a cache, and its persistence, durability, consistency, expiration, and replication behavior depend on the product and configuration. Queries by arbitrary fields or relationships may be inconvenient or require another index/search system. Key design also affects namespace collisions and distribution.
 
 Use a key-value store when the dominant access is key-based and the operational guarantees fit. Use a document, relational, graph, or search-oriented system when the required query patterns demand richer structure or relationships.
+
+## Redis compared with MongoDB and relational databases
+
+Redis is commonly used for fast access by a known key, such as retrieving a cached result or session value. MongoDB stores BSON documents in collections and supports queries over document fields, nested values, and arrays. Relational databases store data in tables with defined relationships and are commonly queried with SQL, constraints, and joins. These models support different access patterns; Redis is not a drop-in replacement for either database when the application needs document queries, relational joins, or database-enforced relationships.
+
+## Data Engineering context
+
+A Data Engineer may encounter Redis as a low-latency cache in front of an operational database or API, reducing repeated reads for frequently requested reference data. A pipeline or service may also use it for short-lived state, deduplication keys, or rate-limiting counters, when Redis's configured persistence and consistency guarantees are appropriate. Redis is generally a serving or operational component in these workflows, not automatically the durable source of truth or an analytical warehouse. Expiration, invalidation, recovery, and stale-value behavior should be part of the design.
 
 ## E-commerce comparison
 
