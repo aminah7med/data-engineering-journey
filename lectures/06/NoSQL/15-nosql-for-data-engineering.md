@@ -1,6 +1,8 @@
 # 15. NoSQL for Data Engineering
 
-NoSQL databases often serve application workloads, ingest semi-structured records, or expose operational state. Data Engineering work must preserve data meaning and quality at ingestion and plan how data will reach analytical systems.
+NoSQL databases can store application data, ingest JSON and event records, cache frequently accessed results, handle distributed high-volume workloads, and expose relationships between entities. Data Engineering work must preserve data meaning and quality at ingestion and plan how data will reach downstream analytical systems and data pipelines.
+
+Different models support different jobs: a document database can store application records with nested fields; a key-value store can cache a result under a known key; a wide-column database can serve high-volume distributed access patterns designed around its partition keys; and a graph database can answer relationship and path queries. These are workload examples, not universal product guarantees.
 
 ## Ingest and validate JSON events
 
@@ -46,6 +48,8 @@ This writes an export file to the current directory; check the destination and a
 
 ## Operational database vs. analytical platform
 
-Operational NoSQL databases serve application reads/writes with low latency and current state. Warehouses and lakehouses are optimized for historical analysis, larger scans, joins across domains, and governed analytical models. A pipeline may extract operational records, validate and transform them, and land them in analytical storage. Avoid turning an application store into an unbounded reporting engine without checking workload impact and product fit.
+Operational NoSQL databases may serve application reads and writes with low latency and current state. Warehouses and lakehouses are optimized for historical analysis, larger scans, joins across domains, and governed analytical models. A pipeline may ingest JSON or change/event records from operational systems, validate and transform them, and land them in analytical storage for downstream reporting and analysis. Caching layers may reduce repeated reads but need deliberate expiration, invalidation, and stale-data handling.
+
+Select each database according to the data model, access patterns, consistency requirements, operational needs, and workload. Consider transaction and recovery behavior, durability, partitioning, retention, monitoring, backup, and the team's ability to operate the product. A technology should not be selected solely because it is labeled NoSQL or distributed.
 
 Initial exercises require only local MongoDB and `mongosh`; no streaming, orchestration, or cloud services are required.

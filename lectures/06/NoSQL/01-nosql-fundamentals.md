@@ -8,13 +8,19 @@ Different models—key-value, document, wide-column, and graph—optimize for di
 
 ## Why these systems exist
 
-Applications have varied requirements: flexible or evolving records, very high request volume, low-latency key lookups, large distributed datasets, or queries across highly connected entities. Relational databases remain excellent for structured data, joins, constraints, and transactions, but a particular workload may benefit from a different model or distribution strategy.
+Applications handle structured data, semi-structured data, and sometimes unstructured data. Examples include relational records, JSON documents with optional fields, application logs, images or other files, and key-value data. NoSQL does not mean that all data is unstructured; the important question is which data model and access patterns fit the workload.
 
-NoSQL systems became popular as internet applications grew and teams needed to distribute work and data across multiple machines. This can help scale particular workloads, but distribution introduces operational complexity and does not eliminate the need for careful modeling, capacity planning, or consistency decisions.
+Applications also have varied requirements: flexible or evolving records, very high request volume, low-latency key lookups, large distributed datasets, or queries across highly connected entities. NoSQL databases provide different models for these needs. A flexible data model can allow records to have different fields, but it does not remove schema requirements: applications still need contracts for expected fields, types, and validation.
+
+Relational databases remain excellent for structured data, joins, constraints, and transactions. SQL and NoSQL are complementary choices rather than mutually exclusive approaches: a relational database may fit transactional workflows, while a NoSQL database may better fit a specific document, key lookup, wide-column, or graph workload. Teams may use both for different parts of a system.
+
+NoSQL systems became popular as internet applications grew and teams needed to distribute work and data across multiple machines. Distributed storage and horizontal scaling can help particular workloads, but they introduce operational complexity and do not eliminate the need for careful modeling, capacity planning, or consistency decisions. Choose a database according to its data model and access patterns, not because NoSQL is assumed to be universally better.
 
 ## Benefits and trade-offs
 
 Potential benefits include flexible record shapes, modeling around common reads, and horizontal distribution for supported workloads. Trade-offs can include duplicated data, application-managed relationships, product-specific query languages, weaker or configurable consistency guarantees, and more complicated operations.
+
+For example, JSON documents can preserve nested application data, logs can be ingested as semi-structured records, and a key-value store can serve values addressed by known keys. These are different workloads and may call for different database types; none implies that relational databases are unsuitable.
 
 Schema flexibility does not mean “no schema.” Applications still depend on field names, types, required values, and invariants. Those expectations must be validated and evolved deliberately.
 

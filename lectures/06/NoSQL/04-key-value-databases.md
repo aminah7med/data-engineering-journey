@@ -7,6 +7,31 @@ Key: session:9f31
 Value: { "customer_id": 101, "expires_at": "2026-10-20T12:00:00Z" }
 ```
 
+## Redis and key-value access
+
+Redis is an example of a key-value database. Its primary command interface uses commands such as `SET` and `GET`; applications commonly access it with a client library, and developers can run commands interactively with `redis-cli`.
+
+```text
+SET session:9f31 "{\"customer_id\":101}"
+GET session:9f31
+```
+
+Redis also supports data structures and additional interfaces, but it does not use SQL as its primary command interface. Its persistence, replication, expiration, and other behavior depend on configuration and the Redis version or deployment.
+
+## Python dictionary analogy
+
+A Python dictionary is a useful conceptual analogy because it maps keys to values:
+
+```python
+session = {"customer_id": 101}
+sessions = {"session:9f31": session}
+sessions["session:9f31"]  # lookup by key
+sessions["session:9f31"] = {"customer_id": 101, "active": True}  # update
+del sessions["session:9f31"]  # delete
+```
+
+This analogy explains key-based lookup, not database equivalence. A Python dictionary is an in-memory programming-language data structure; by itself, it does not provide database persistence, distribution across machines, replication, concurrent client access, or the operational controls of a database.
+
 ## Good fits
 
 - Session state with expiration.

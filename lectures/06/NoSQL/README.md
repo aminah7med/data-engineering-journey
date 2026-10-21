@@ -8,11 +8,13 @@ By the end of this section, you should be able to:
 
 - Explain why NoSQL databases exist and compare their models with relational systems.
 - Recognize key-value, document, wide-column, and graph workloads and their trade-offs.
+- Identify the primary query language or data-access interface for each NoSQL model.
 - Use MongoDB documents, collections, BSON types, and CRUD operations with `mongosh`.
 - Model related data with embedding or references based on query patterns and update needs.
 - Build aggregation pipelines, select indexes, and reason about query performance.
 - Explain replication, consistency, partitioning, sharding, and CAP without treating them as slogans.
 - Apply document databases to semi-structured ingestion and data-quality workflows.
+- Relate NoSQL choices to application storage, caching, distributed workloads, and downstream analytics.
 
 ## Prerequisites
 

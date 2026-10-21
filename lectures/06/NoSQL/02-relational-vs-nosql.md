@@ -13,6 +13,8 @@ Relational databases organize data into tables with declared columns, keys, cons
 
 The table describes common tendencies, not universal guarantees. Relational systems can scale horizontally, and NoSQL systems can support transactions and schemas. Compare actual products and workload requirements.
 
+SQL is a mature, broadly shared language for relational databases, while NoSQL has no single query language. The interface depends on the product and model: MongoDB uses its Query API, Redis primarily uses commands such as `SET` and `GET`, Cassandra provides CQL, HBase provides APIs and shell commands, and Neo4j uses Cypher. A system may also expose client libraries or additional interfaces. Do not assume that choosing NoSQL means giving up SQL everywhere, or that every NoSQL product has the same query capabilities.
+
 ## Choosing based on workload
 
 Choose relational storage when correctness depends on constraints across related records, flexible joins, multi-entity transactions, or mature SQL analytics are central. Consider NoSQL when a particular model directly supports important access patterns—for example, retrieving a nested aggregate as one document or serving a high-volume key lookup.

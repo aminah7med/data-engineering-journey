@@ -15,6 +15,23 @@ Example MongoDB document:
 
 Documents in one collection can have different optional fields, but applications still need an understood schema. Validation, tests, and version-aware transformations help control that flexibility.
 
+## Querying documents
+
+MongoDB provides the MongoDB Query API through drivers and `mongosh`. A query filter selects documents, and a projection controls which fields are returned:
+
+```javascript
+db.customers.find(
+  { "address.city": "Cairo" },
+  { _id: 0, customer_id: 1, name: 1 }
+);
+```
+
+The API also supports update and delete operations and aggregation pipelines. These are MongoDB-specific query capabilities, not a query language shared by all document databases.
+
+## Good fits
+
+Document databases can fit application records whose fields naturally form a document and are commonly read together, such as content, product catalogs, or an order with its bounded line items. They can also accept semi-structured JSON-like records with optional fields. Use validation and deliberate modeling where data quality or downstream contracts require consistent fields. If the workload depends on extensive joins, strict relational constraints, or broad analytical scans, compare a relational or analytical platform rather than assuming a document store is a replacement.
+
 ## Modeling strengths and costs
 
 Embedding fields that are read and updated together can reduce round trips. Arrays work well for bounded child collections, such as an order's line items. References are useful when related data is shared, independently updated, or unbounded. Denormalizing can improve reads but makes updates and consistency more complex.
