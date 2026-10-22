@@ -13,6 +13,20 @@ Apache Cassandra and Apache HBase are both distributed wide-column systems, but 
 
 These architectural and interface differences affect deployment, consistency behavior, integration, and operations. CQL is not HBase's query interface: HBase applications generally use APIs or shell commands. Check the specific product documentation and version when selecting or operating either system.
 
+## MongoDB and Cassandra compared
+
+MongoDB and Apache Cassandra are designed around different data models and access patterns:
+
+| Concern | MongoDB | Apache Cassandra |
+|---|---|---|
+| Data model | Document database; BSON documents in collections | Distributed wide-column database; rows organized by partition and clustering keys |
+| Typical query interface | MongoDB Query API through drivers or `mongosh` | Cassandra Query Language (CQL) through drivers or `cqlsh` |
+| Write architecture | Each replica set has one primary for writes; a sharded cluster has a replica set per shard | Peer-to-peer architecture; any node can coordinate a request, with replicas for the requested partition handling it |
+| Modeling focus | Documents and fields shaped around application reads and updates | Tables and partition keys designed for known queries and predictable distribution |
+| Common fit | Application records with nested or evolving fields | High-volume distributed workloads with planned key-based access |
+
+These are broad architectural distinctions, not guarantees about performance or consistency. Both systems have product-specific consistency controls and trade-offs; select based on data shape, access patterns, required guarantees, and operational needs. MongoDB's document model is introduced in [Document Databases](05-document-databases.md).
+
 ## Typical workload
 
 A telemetry service could store readings in a table keyed by `(device_id, time_bucket)` and cluster each device's events by timestamp. A query for one device's readings during a known time interval can then be served from the relevant partition. In Cassandra, a simplified table and query might look like:

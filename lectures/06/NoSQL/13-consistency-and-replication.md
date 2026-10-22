@@ -20,6 +20,16 @@ MongoDB settings shape read and write guarantees:
 
 These controls are distinct and must be chosen together with the application's consistency and availability requirements. They do not make replicas synchronous or eliminate every data-loss scenario. Review the MongoDB version, topology, and configuration before relying on a guarantee.
 
+## Multi-master concepts and Cassandra coordination
+
+**Multi-master architecture** is a general term for a distributed design in which more than one node can accept writes, rather than routing all writes through one designated primary. It does not mean that all nodes necessarily store every record, nor does it define how concurrent writes are reconciled. Systems may coordinate, reject, merge, or resolve competing writes according to their data model and consistency rules.
+
+For example, two application regions might concurrently update the same customer's preferred language while disconnected. When the updates meet, the system needs a defined outcome—such as choosing a version by timestamp, applying a domain-specific merge, or surfacing a conflict for application handling. “Last write wins” is one possible policy, not a universal behavior, and timestamps or arrival order may not match business intent.
+
+Apache Cassandra uses a peer-to-peer architecture without a single primary for the cluster. A client can connect to any node; that node acts as a **coordinator** for the request, determines the replicas responsible for the partition key, and coordinates with them according to the requested consistency level. The coordinator is not a master and does not have to own the data. Any node can coordinate requests, while replicas store the relevant partitions. Cassandra's replication and consistency settings determine how many replicas must respond for reads and writes; concurrent updates to the same data are reconciled according to Cassandra's rules, commonly using cell timestamps and last-write-wins behavior. Applications should understand these semantics and use suitable consistency levels and data modeling rather than assuming arbitrary concurrent writes are merged safely.
+
+This differs from a MongoDB replica set, where one primary accepts writes at a time and secondaries replicate its oplog. MongoDB deployments can shard data, but each shard is typically a replica set with its own primary; this is not the same as every node in a MongoDB replica set accepting writes as a multi-master system.
+
 ## CAP theorem, accurately
 
 CAP concerns behavior during a network partition in a distributed system: a system must trade off between always returning a response (availability) and returning a response consistent with the single-copy/linearizable view (strong consistency) for affected operations. Partition tolerance is not a convenient optional feature for a system that must continue across network splits; the meaningful trade-off is how it behaves when a partition occurs.
