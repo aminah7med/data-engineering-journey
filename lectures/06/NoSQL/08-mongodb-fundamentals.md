@@ -17,6 +17,25 @@ BSON is MongoDB's binary serialization format for storing and communicating docu
 
 Collections can contain documents with optional fields. This does not remove the need for a schema contract. For example, downstream code may require `customer_id` to be an integer even if MongoDB permits some records to omit it.
 
+## Parsing JSON before storage
+
+Parsing converts JSON text into values a program can work with. For example, a backend can parse this JSON text:
+
+```javascript
+const jsonText = '{"customer_id": 101, "name": "Learner"}';
+const document = JSON.parse(jsonText);
+```
+
+After parsing, `document` is a JavaScript object whose fields the backend can inspect. If the text is not valid JSON, parsing fails; successful parsing does not prove that the data is valid for the application.
+
+Parsing, validation, and storage are separate steps:
+
+- **Parsing** checks JSON syntax and converts the text into in-memory values.
+- **Validation** checks whether those values meet the application's requirements, such as required fields, types, and business rules.
+- **Storage** writes accepted data to a database. When a MongoDB driver inserts a JavaScript object, MongoDB stores it as a BSON document.
+
+JSON is a text-based data-interchange format; BSON is MongoDB's binary document format. An application does not usually need to manually convert JSON text into BSON: the MongoDB driver serializes the validated object for the database.
+
 ## MongoDB query interface and basic operations
 
 MongoDB's Query API is used through drivers and `mongosh`; it is not SQL. Common document operations include inserting a document with `insertOne()`, reading matching documents with `find()` or `findOne()`, changing fields with `updateOne()` and update operators such as `$set`, and removing a matching document with `deleteOne()`.
@@ -51,7 +70,7 @@ For example, a signup form could send a `POST /api/registrations` request with a
 }
 ```
 
-Here, `email` and `password` are mandatory fields for the application, while `display_name` is optional. The backend parses the request, checks that required fields are present and valid, validates field types and business rules, and rejects invalid input before writing to MongoDB. It should hash the password using an appropriate password-hashing method rather than store the submitted password in plaintext.
+Here, `email` and `password` are mandatory fields for the application, while `display_name` is optional. The backend parses the JSON request, checks that required fields are present and valid, validates field types and business rules, and rejects invalid input before writing to MongoDB. Parsing and validation are distinct: parsing makes the request available as program values, while validation determines whether those values may be accepted. It should hash the password using an appropriate password-hashing method rather than store the submitted password in plaintext.
 
 After validation, the backend can insert a document into a `registrations` collection. On success, the API returns an appropriate success status and response, such as `201 Created`; invalid input can return `400 Bad Request`, and a duplicate email may return `409 Conflict`. Database or service failures should produce an appropriate error response without exposing sensitive implementation details.
 
