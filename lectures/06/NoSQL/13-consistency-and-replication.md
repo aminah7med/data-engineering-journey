@@ -6,6 +6,28 @@ Replication lag is the delay before a replica applies a recent change; by itself
 
 Replication maintains copies of data on multiple nodes. Copies can help a system continue serving data after an individual node fails and provide redundancy, but replication can also copy accidental deletes or corruption. Replication is not a backup strategy: backups should be protected, retained, and tested for restoration independently.
 
+## Happy path for a distributed write
+
+The **Happy Scenario**, or **Happy Path**, is the normal successful flow when the participating services and nodes are available and the request completes as expected. In a Cassandra cluster with replication factor 3 and consistency level `QUORUM`, a write can follow these steps:
+
+1. The client sends a write to a Cassandra node, which acts as the coordinator for this request.
+2. The coordinator uses the partition key to identify the replicas responsible for the data.
+3. The coordinator forwards the write to those replicas.
+4. Replicas apply the mutation and send acknowledgements to the coordinator.
+5. Once the coordinator receives acknowledgements from a quorum (2 of the 3 replicas in this example), it reports success to the client.
+
+The remaining replica may apply the write slightly later. Replication therefore does not necessarily mean every replica is updated at the exact same moment. The consistency level determines how many replica acknowledgements Cassandra waits for before treating the write as successful; a stronger level can increase coordination and latency, and can fail to complete if enough replicas are unavailable. The level is not a guarantee that every node in the cluster has acknowledged the write.
+
+## When the happy path fails
+
+Failure handling is different from the normal successful flow:
+
+- **Node failure:** a replica may be unavailable. The write can still succeed if enough other replicas respond for the configured consistency level; otherwise, the coordinator may return a timeout or unavailable error.
+- **Network failure:** the client or coordinator may lose communication with a node. A timeout means the client did not receive the required acknowledgement in time; it does not always prove that no replica applied the write. Applications should handle retries carefully, often by making operations idempotent where possible.
+- **Write conflict:** concurrent writes to the same data may both reach replicas in different orders. Cassandra reconciles conflicting cell values using timestamps and its conflict-resolution rules, commonly last-write-wins. This is not the same as a node failure, and the winning timestamp may not reflect the intended business outcome.
+
+These are failure or contention cases, not steps in the Happy Path. The actual outcome depends on replication factor, consistency level, failure timing, and the application's retry and conflict-handling logic.
+
 ## MongoDB replica sets
 
 > **MongoDB-specific:** a replica set has one primary that normally accepts writes and secondary members that replicate changes from the primary's operation log (oplog). Replication is generally asynchronous, so a secondary may temporarily be behind the primary.
